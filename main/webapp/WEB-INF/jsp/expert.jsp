@@ -39,11 +39,31 @@
 <%--private SubCategory subCategory;--%>
 <%--@ManyToOne--%>
 <%--private Services services;--%>
-<button id="getAll" class="btn btn-primary">Get All SubServices</button><br>
+<form>
+    <div class="w-75 t-3 s-3 e-3  align-items-center">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Name</th>
+                <td><input id="name" type="text" class="form-control form-control-sm" placeholder="Enter Name"></td>
+                <th>Price</th>
+                <td><input id="price" type="text" class="form-control form-control-sm" placeholder="Enter Base Price"></td>
+                <th scope="row">Description</th>
+                <td><input id="description" type="text" class="form-control form-control-sm" placeholder="Enter Description"></td>
+            </tr>
+            <tr>
+                <th>Service</th>
+                <td><input id="service" type="text" class="form-control form-control-sm" placeholder="Enter Service Name"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+<button id="getAll" class="btn btn-primary">Search SubServices</button><br>
 
 <table id="tb" class="table center">
     <thead><th>Name</th><th>Base Price</th><th>Description</th>
-    <th>Sub-Category</th><th>Category</th><th>Select</th></thead>
+    <th>Category</th><th>Select</th></thead>
 
     <tbody>
 
@@ -57,31 +77,63 @@
 
 <script>
     /********Get All Sub Services********************/
-
-    $("#getAll").click(function(){
-        var msg="";
+    $("#getAll").click(function () {
+        var msg = "";
         var table = document.getElementById("tb");
-        for(var i = table.rows.length - 1; i > 0; i--)
-        {
+        for (var i = table.rows.length - 1; i > 0; i--) {
             table.deleteRow(i);
         }
+        var name = $("#name").val();
+        var price = $("#price").val();
+        var description = $("#description").val();
+        var service = $("#service").val();
+
+
+        var arr = {name:name, basePrice:price, description:description, services:{name:service}};
         $.ajax({
-            type:"GET",
-            url:"http://localhost:8080/ServiceManagement/allSubServices",
-            success :function (result){
-                $.each(result,function(index,value){
-                    msg+="<tr><td>"+value.name+"</td><td>"+value.basePrice+"</td><td>"+value.description+"</td><td>"+value.subCategory.name+
-                        "<td>"+value.services.name+"</td>"+
+            type: "POST",
+            url: "http://localhost:8080/ServiceManagement/search",
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                $.each(result, function (index, value) {
+                    msg += "<tr><td>" + value.name + "</td><td>" + value.basePrice + "</td><td>" + value.description +
+                        "</td><td>" + value.services.name + "</td>" +
                         "<td><input type=\"checkbox\" class=\"form-check-input checkbox\" id=\"check\" name=\"option\" value=\"something\"></td></tr>";
                 });
                 $(msg).appendTo("#tb tbody");
+                //$("#myId").text(JSON.stringify(result));
             },
-            error:function (result){
+            error: function (result) {
                 $("#myId").text(JSON.stringify(result));
             }
         });
-
     });
+
+    // $("#getAll").click(function(){
+    //     var msg="";
+    //     var table = document.getElementById("tb");
+    //     for(var i = table.rows.length - 1; i > 0; i--)
+    //     {
+    //         table.deleteRow(i);
+    //     }
+    //     $.ajax({
+    //         type:"GET",
+    //         url:"http://localhost:8080/ServiceManagement/allSubServices",
+    //         success :function (result){
+    //             $.each(result,function(index,value){
+    //                 msg+="<tr><td>"+value.name+"</td><td>"+value.basePrice+"</td><td>"+value.description+"</td><td>"+value.subCategory.name+
+    //                     "<td>"+value.services.name+"</td>"+
+    //                     "<td><input type=\"checkbox\" class=\"form-check-input checkbox\" id=\"check\" name=\"option\" value=\"something\"></td></tr>";
+    //             });
+    //             $(msg).appendTo("#tb tbody");
+    //         },
+    //         error:function (result){
+    //             $("#myId").text(JSON.stringify(result));
+    //         }
+    //     });
+    //
+    // });
 
     /********Check Box Checked Event********************/
 

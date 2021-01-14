@@ -23,7 +23,7 @@
                 <td><input id="email" type="text" class="form-control form-control-sm" placeholder="Enter Email"></td>
             </tr>
             <tr>
-                <th>Specialty</th>
+                <th>Service</th>
                 <td><input id="subService" type="text" class="form-control form-control-sm" placeholder="Enter Service"></td>
                 <th scope="row">Score</th>
                 <td><input id="score" type="text" class="form-control form-control-sm" placeholder="Enter Score"></td>
@@ -46,7 +46,7 @@
 <div class="w-75 p-3">
     <table id="tb" class="table">
         <thead>
-        <th>Personnel Code</th>
+        <th>Expert ID</th>
         <th>Name</th>
         <th>Family</th>
         <th>Email</th>

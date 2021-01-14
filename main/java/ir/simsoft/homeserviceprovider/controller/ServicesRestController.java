@@ -1,9 +1,6 @@
 package ir.simsoft.homeserviceprovider.controller;
 
-import ir.simsoft.homeserviceprovider.repository.entity.Category;
-import ir.simsoft.homeserviceprovider.repository.entity.Services;
-import ir.simsoft.homeserviceprovider.repository.entity.SubCategory;
-import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
+import ir.simsoft.homeserviceprovider.repository.entity.*;
 import ir.simsoft.homeserviceprovider.serviceclasses.CategoryService;
 import ir.simsoft.homeserviceprovider.serviceclasses.ServicesService;
 import ir.simsoft.homeserviceprovider.serviceclasses.SubCategoryService;
@@ -70,6 +67,14 @@ public class ServicesRestController {
         subCategoryService.insertSubCategory(subCategory);
         SubServices newSubServices=subServicesService.insertSubService(subServices);
         return ResponseEntity.ok("new Service with "+newSubServices.getName()+" is added");
+    }
+
+    @PostMapping("/search")
+    @ResponseBody
+    public List<SubServices> searchBySpecifiedField(@RequestBody SubServices subServices) {
+        //subServices.setBasePrice(Long.parseLong(subServices.getBasePrice());
+        System.out.println(subServices);
+        return subServicesService.findBySpecifiedField(subServices);
     }
 //    @PostMapping("/newCategory")
 //    public Category insertCategory(@RequestBody Category category){

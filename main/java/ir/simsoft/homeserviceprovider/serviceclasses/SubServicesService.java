@@ -1,7 +1,9 @@
 package ir.simsoft.homeserviceprovider.serviceclasses;
 
 import ir.simsoft.homeserviceprovider.exceptions.BusinessException;
+import ir.simsoft.homeserviceprovider.repository.dao.ExpertDao;
 import ir.simsoft.homeserviceprovider.repository.dao.SubServicesDao;
+import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,5 +42,10 @@ public class SubServicesService {
             return subServicesDao.save(byId.get());
         }else
             throw new NullPointerException(BusinessException.nullPointerForSubService);
+    }
+
+    public List<SubServices> findBySpecifiedField(SubServices subServices) {
+        List<SubServices> subServicesList = subServicesDao.findAll(SubServicesDao.findBy(subServices));
+        return subServicesList;
     }
 }
