@@ -17,12 +17,12 @@
 <h3>Welcome, Enter The User Details</h3>
 
 
-<form:form method="POST" action="/user/register" modelAttribute="user"
-           enctype="multipart/form-data" onsubmit="return checkEmail(this)" >
+<form:form method="POST" name="form" action="/user/register" modelAttribute="user"
+           enctype="multipart/form-data" onsubmit="return validate() ;" >
     <table>
         <tr>
             <td><form:label path="name">Name</form:label></td>
-            <td><form:input id="name" path="name" required="true"  /></td>
+            <td><form:input id="name" path="name" name="name" required="true"  /></td>
         </tr>
         <tr>
             <td><form:label path="family">Family</form:label></td>
@@ -30,7 +30,7 @@
         </tr>
         <tr>
             <td><form:label path="email">Email</form:label></td>
-            <td><form:input id="email" path="email" required="true" onfocus="checkEmail()"/><br><p id="result1"></p></td>
+            <td><form:input id="email" path="email" required="true" /><p id="result1"></p></td>
         </tr>
         <tr>
             <td><form:label path="password">Password</form:label></td>
@@ -46,7 +46,7 @@
             <td><input type="file" name="image" accept="image/jpg" required="true" /></td>
         </tr>
         <tr>
-            <td><input id="submit" type="submit" value="Submit"/>Register</td>
+            <td><input id="submit" type="submit" value="Submit" onclick="return checkEmail();"/>Register</td>
         </tr>
     </table>
 </form:form>
@@ -58,26 +58,31 @@
     // function disableSubmitButton(){
     //     //document.getElementById("submit").disabled = true;
     // }
-    $("#getAll").click( function(){
-        $.ajax({
-            type:"GET",
-            url:"http://localhost:8080/user/allUsers",
-            success :function (result){
-                console.log("hello");
-                console.log(result);
-                console.log(result.name);
-                document.getElementById("result").innerText = JSON.stringify(result);
-            },
-            error:function (result){
-                $("#result").text(JSON.stringify(result));
-            }
-        });
-    });
+    // $("#getAll").click( function(){
+    //     $.ajax({
+    //         type:"GET",
+    //         url:"http://localhost:8080/user/allUsers",
+    //         success :function (result){
+    //             console.log("hello");
+    //             console.log(result);
+    //             console.log(result.name);
+    //             document.getElementById("result").innerText = JSON.stringify(result);
+    //         },
+    //         error:function (result){
+    //             $("#result").text(JSON.stringify(result));
+    //         }
+    //     });
+    // });
     /*************check email****************/
     // $("#email").change(function(){
     //     $("#email").on("input", function () {
             //alert("The text has been changed.");
-            function checkEmail() {
+
+    var emailValid;
+    var passwordValid;
+
+    $("#email").on("input", function () {
+
                 var email = $("#email").val();
                 var name = $("#name").val();
                 var family = $("#family").val();
@@ -99,27 +104,25 @@
                     contentType: 'application/json; charset=utf-8',
                     success: function (result) {
                         if (result == false) {
+                            emailValid=false;
                             document.getElementById("result1").innerText = "the email already exists!!";
                             $("#email").css({
-                                background: "yellow",
                                 border: "3px red solid"
                             });
-                            return false;
+
                         } else {
                             $("#email").css({
-                                background: "white",
                                 border: "3px green solid"
                             });
                             document.getElementById("result1").innerText = "";
-                            return true;
+                           emailValid=true;
                         }
                     },
                     error: function (result) {
                         // $("#result").text(JSON.stringify(result));
                     }
                 });
-            }
-        // });
+         });
 
         $("#password").on("input", function () {
             //alert("The text has been changed.");
@@ -145,17 +148,16 @@
                     if (result == false) {
                         document.getElementById("result2").innerText = "the password format is wrong!";
                         $( "#password" ).css({
-                            background: "yellow",
                             border: "3px red solid"
                         });
-                        return false;
+                        passwordValid= false;
                     } else {
                         $("#password").css({
-                            background: "white",
                             border: "3px green solid"
                         });
                         document.getElementById("result2").innerText = "";
-                        return true;
+                      passwordValid=true;
+
                         //document.getElementById("submit").disabled = false;
                     }
                 },
@@ -164,6 +166,23 @@
                 }
             });
         });
+        function validate(){
+            if(passwordValid===true && emailValid===true){
+
+                return true;}
+            else{
+                if(emailValid===false && passwordValid===true){
+                    $("#email").focus();
+                }
+                else if(passwordValid===false && emailValid===true){
+                    $("#password").focus();
+                }
+                else if(passwordValid===false && emailValid===false){
+                    $("#email").focus();
+                }
+                return false;
+                }
+        }
 
 </script>
 </body>
