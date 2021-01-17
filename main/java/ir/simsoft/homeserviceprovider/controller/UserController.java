@@ -116,6 +116,7 @@ public class UserController {
             ConfirmationToken confirmationToken = new ConfirmationToken(expert);
             confirmationTokenService.saveConfirmationToken(confirmationToken);
             userService.sendConfirmationMail(user.getEmail(), confirmationToken.getConfirmationToken());
+
         }else{
             User savedUser = userService.registerUser(user);
             ConfirmationToken confirmationToken = new ConfirmationToken(user);
@@ -154,13 +155,21 @@ public class UserController {
 //    }
 
     @GetMapping("/confirm")
-    String confirmMail(@RequestParam("token") String confirmationToken) {
+    String confirmMail(@RequestParam("token") String confirmationToken,Model model) {
 
         Optional<ConfirmationToken> optionalConfirmationToken =
                 confirmationTokenService.findConfirmationTokenByToken(confirmationToken);
+
         if(optionalConfirmationToken.isPresent()){
             userService.confirmUser(optionalConfirmationToken.get());
-            return "welcome";
+            if(optionalConfirmationToken.get().getUser().getUserRole().equals(UserRole.EXPERT)){
+                model.addAttribute("expert",optionalConfirmationToken.get().getUser());
+                return "expertConfirm";
+            }
+            else {
+                model.addAttribute("customer",optionalConfirmationToken.get().getUser());
+                return "customerConfirm";
+            }
         }else{
             return "tokenError";
         }

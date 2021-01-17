@@ -17,9 +17,13 @@ public class AdminController {
         return "admin";
     }
 
-    @GetMapping("/confirmNewExpert")
+    @GetMapping("/manageExpert/confirmNewExpert")
     public String getConfirmNewExpertPage() {
         return "confirmNewExpert";
+    }
+    @GetMapping("/manageExpert")
+    public String getManageExpertPage() {
+        return "manageExpert";
     }
 
     @GetMapping("/manageService")
@@ -27,13 +31,13 @@ public class AdminController {
         return "manageService";
     }
 
-    @GetMapping("/expertSearch")
-    public String getExpertReportPage() {
+    @GetMapping("/manageExpert/expertSearch")
+    public String getExpertSearchPage() {
         return "expertSearch";
     }
 
-    @GetMapping("/userReport")
-    public String getUserReportPage() {
-        return "userReport";
+    @GetMapping("/userSearch")
+    public String getUserSearchPage() {
+        return "userSearch";
     }
 }

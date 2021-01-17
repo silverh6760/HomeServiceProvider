@@ -13,10 +13,7 @@
 </div>
 <a href="/admin/manageService">Manage Services</a>
 <br/>
-<a href="/admin/confirmNewExpert">Confirm New Experts</a>
+<a href="/admin/manageExpert">Manage Experts</a>
 <br/>
-<a href="/admin/expertSearch">Expert Report</a>
-<br/>
-<a href="/admin/userReport">User Report</a>
 </body>
 </html>

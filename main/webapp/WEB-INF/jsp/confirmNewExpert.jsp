@@ -17,9 +17,6 @@
 </head>
 <body>
 
-<div class="d-flex text-secondary bg-info justify-content-center p-3">
-    <h1>Welcome ...</h1>
-</div>
 
 <div>
     <br>
@@ -279,6 +276,7 @@
 
     /***Delete With ID in table and DB****/
     $("#tb").on('click', '.btnSelect2', function () {
+        document.getElementById("myId").innerText="";
         // get the current row
         var currentRow = $(this).closest("tr");
 
