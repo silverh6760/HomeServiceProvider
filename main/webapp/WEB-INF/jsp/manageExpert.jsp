@@ -16,6 +16,8 @@
 </div>
 <a href="/admin/manageExpert/confirmNewExpert">Confirm New Experts</a>
 <br/>
-<a href="/admin/manageExpert/expertSearch">Expert Services Assignment</a>
+<a href="/admin/manageExpert/expertSearch">Expert Search</a>
+<br>
+<a href="/admin/manageExpert/expertAssignment">Expert Services Assignment</a>
 </body>
 </html>

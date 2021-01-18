@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<h3>Welcome, Enter The User Details</h3>
+<h3>Register Page</h3>
 
 
 <form:form method="POST" name="form" action="/user/register" modelAttribute="user"

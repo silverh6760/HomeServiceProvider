@@ -35,6 +35,10 @@ public class AdminController {
     public String getExpertSearchPage() {
         return "expertSearch";
     }
+    @GetMapping("/manageExpert/expertAssignment")
+    public String getExpertAssignmentPage() {
+        return "expertAssignAdmin";
+    }
 
     @GetMapping("/userSearch")
     public String getUserSearchPage() {
