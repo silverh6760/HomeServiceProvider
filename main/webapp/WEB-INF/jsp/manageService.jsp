@@ -8,14 +8,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="d-flex text-secondary bg-info justify-content-center p-3">
-    <h1>Welcome ...</h1>
-</div>
+
 
 <div>
     <br>
-    <button class="btn btn-primary"  data-toggle="modal" data-target="#insertModalService">Create Service</button>
-    <button class="btn btn-primary"  data-toggle="modal" data-target="#insertModalSubService">Create Sub Service</button>
+    <button class="btn btn-primary"  data-toggle="modal" data-target="#insertModalService">Insert Service</button>
+    <button class="btn btn-primary"  data-toggle="modal" data-target="#insertModalSubService">Insert SubService</button>
     <br>
     <p id="myId"></p>
 </div>

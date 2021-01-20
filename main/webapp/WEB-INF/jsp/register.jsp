@@ -36,17 +36,17 @@
             <td><form:label path="password">Password</form:label></td>
             <td><form:input type="password" id="password" path="password" required="true" /><br><p id="result2"></p></td>
         </tr>
-        <tr>
+        <tr >
             <td>userRole :</td>
-            <td><form:select path="userRole" items="${userRoleList}" required="true"/></td>
+            <td><form:select onchange="myFunction()"  path="userRole" items="${userRoleList}" id="selectOption" required="true"/></td>
             <td><form:errors path="userRole" cssClass="error" /></td>
         </tr>
-        <tr>
+        <tr id="photoTR">
             <td><label >Photo</label></td>
             <td><input type="file" name="image" accept="image/jpg" required="true" /></td>
         </tr>
         <tr>
-            <td><input id="submit" type="submit" value="Submit" onclick="return checkEmail();"/>Register</td>
+            <td><input id="submit" type="submit" value="Submit" />Register</td>
         </tr>
     </table>
 </form:form>
@@ -55,6 +55,12 @@
     <p id="result"></p>
 <%--<img src="/@{${user.photoImagePath}}"  alt=""/>--%>
 <script>
+    function myFunction() {
+
+        if($("#selectOption").val() != "EXPERT"){
+             $("#photoTR").css("display", "none");
+        }
+    }
     // function disableSubmitButton(){
     //     //document.getElementById("submit").disabled = true;
     // }
@@ -180,6 +186,10 @@
                 else if(passwordValid===false && emailValid===false){
                     $("#email").focus();
                 }
+                else if(passwordValid===true && emailValid===false){
+                    $("#email").focus();
+                }
+
                 return false;
                 }
         }

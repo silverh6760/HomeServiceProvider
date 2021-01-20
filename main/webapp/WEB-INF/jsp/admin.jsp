@@ -8,9 +8,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="d-flex text-secondary bg-info justify-content-center p-3">
-    <h1>Welcome ...</h1>
-</div>
+
 <a href="/admin/manageService">Manage Services</a>
 <br/>
 <a href="/admin/manageExpert">Manage Experts</a>

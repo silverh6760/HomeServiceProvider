@@ -3,6 +3,7 @@ package ir.simsoft.homeserviceprovider.controller;
 import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.serviceclasses.ExpertService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,9 @@ public class ExpertController {
     private ExpertService expertService;
     @GetMapping
     public String getConfirmNewExpertPage(Model model) {
-        Expert expert=expertService.getExpertById(1);
-        model.addAttribute("expert",expert);
+//       Expert expert= Auth
+//        model.addAttribute("expert",expert);
+
         return "expert";
     }
 }

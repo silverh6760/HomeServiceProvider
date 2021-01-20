@@ -52,11 +52,10 @@ public class ExpertRestController {
     }
     @PostMapping("/newExpert")
     @ResponseBody
-    public ResponseEntity saveExpert(@RequestBody User user){
-//        user.setEnabled(true);
-//        user.setConfirmationState(ConfirmationState.CONFIRMED);
-//        userService.registerUser(user);
-       return ResponseEntity.ok("New Expert with " + user.getEmail() + " is added!");
+    public ResponseEntity saveExpert(@RequestBody Expert expert){
+        expert.setEnabled(true);
+        Expert expert1 = expertService.registerExpert(expert);
+        return ResponseEntity.ok("New Expert with ID " + expert1.getId() + " is added!");
 
     }
 

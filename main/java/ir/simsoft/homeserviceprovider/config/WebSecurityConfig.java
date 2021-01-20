@@ -10,6 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Configuration
@@ -18,10 +23,42 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+//        List<RequestMatcher> requestMatchers=new ArrayList<>();
+//        requestMatchers.add(new AntPathRequestMatcher("/user/register"));
+//        requestMatchers.add(new AntPathRequestMatcher("/home"));
+//        requestMatchers.add(new AntPathRequestMatcher("/home/loginPage"));
+
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/user","/").permitAll()
+                .antMatchers("/user","/","/home","/user/home/**","/user/register","/user/welcome/**").permitAll()
+                .antMatchers("/expertPage").hasAnyAuthority("EXPERT")
+                .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                //.antMatchers(HttpMethod.POST,"/user/register","/user/register/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/user/checkPassword","/user/checkPassword/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/user/checkEmail","/user/checkEmail/**").permitAll()
+                .anyRequest().authenticated()
+
+                .and()
+                .formLogin()
+                .loginPage("/home/loginPage")
+                .loginProcessingUrl("/doLogin")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/home").permitAll()
+                .failureUrl("/home/loginError")
+                .permitAll()
+
+                .and()
+                .logout()
+                .permitAll()
                 .and().httpBasic();
+
+
+//        http.csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/user","/").permitAll()
+//                .and().httpBasic();
     }
     @Bean
     public PasswordEncoder passwordEncoder(){

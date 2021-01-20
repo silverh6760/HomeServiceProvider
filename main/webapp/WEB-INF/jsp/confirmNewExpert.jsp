@@ -228,8 +228,7 @@
             contentType: 'application/json; charset=utf-8',
             success: function (result) {
                 if (result == false) {
-                    document.getElementById("result").innerText = "Password must be at least 8 digits " +
-                        "and contain letters and numbers";
+                    document.getElementById("result").innerText = "the password format is wrong!";
                 } else {
                     document.getElementById("result").innerText = "";
                     document.getElementById("submit").disabled = false;
@@ -251,14 +250,14 @@
         var mess="";
         $.ajax({
             type:"POST",
-            url:"http://localhost:8080/expert",
+            url:"http://localhost:8080/expert/newExpert",
             data: JSON.stringify(arr),
             contentType: "application/json",
             success :function(value){
                 tId=JSON.stringify(value);
                 var h=tId.match(/\d+/g);
                 mess="<tr><td>"+h+"</td><td>"+name+"</td><td>"+family+"</td><td>"+email+
-                    "<td> \"WAITING_TO_BE_CONFIRMED\""+"</td><td>Not Found</td>" +
+                    "<td> \"WAITING_TO_BE_CONFIRMED\""+"</td><td>UNAVAILABLE</td>" +
                     "<td><button class=\"btn btn-sm btn-success btnSelect\" data-toggle=\"modal\" data-target=\"#editModal\">Confirm</button>" +
                     "<button class=\"btn btn-sm btn-danger btnSelect2\" data-toggle=\"modal\" data-target=\"#deleteModal\">Delete</button></td></tr>";
 

@@ -9,8 +9,10 @@ import ir.simsoft.homeserviceprovider.serviceclasses.ConfirmationTokenService;
 import ir.simsoft.homeserviceprovider.serviceclasses.ExpertService;
 import ir.simsoft.homeserviceprovider.serviceclasses.FileUploadUtil;
 import ir.simsoft.homeserviceprovider.serviceclasses.UserService;
+import org.dom4j.rule.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -45,14 +47,33 @@ public class UserController {
     public String hello(){
         return "welcome";
     }
+
     @GetMapping("/allUsers")
     @ResponseBody
     public List<User> getUsers(){
         List<User> users = userService.getUsers();
         return users;
     }
+/***********Login*****************/
+    @GetMapping("/home")
+    public String getHomePage(){
+        return "home";
+    }
+    @GetMapping("/home/loginPage")
+    public String getLoginPage(Model model){
+//        User user = new User();
+//        model.addAttribute("user",user);
+        return "loginPage";
+    }
+    @GetMapping("/home/loginError")
+    public String getLoginErrorPage(Model model){
+        model.addAttribute("login_error", "username or password incorrect!");
+        return "loginPage";
+    }
+    //@PostMapping()
 
-
+    /*****************************/
+    @PreAuthorize("permitAll()")
     @PostMapping("/checkEmail")
     @ResponseBody
     public Boolean checkEmail(@RequestBody User user){
@@ -62,6 +83,7 @@ public class UserController {
         else
             return true;
     }
+    @PreAuthorize("permitAll()")
     @PostMapping("/checkPassword")
     @ResponseBody
     public Boolean checkPassword(@RequestBody User user){
@@ -92,7 +114,7 @@ public class UserController {
     public String getRegistrationPage(Model model){
         User user =new User();
         model.addAttribute("user",user);
-        List<String> userRoleList = Arrays.asList("EXPERT", "CUSTOMER");
+        List<String> userRoleList = Arrays.asList("EXPERT", "CUSTOMER","ADMIN");
         model.addAttribute("userRoleList", userRoleList);
         return "register";
     }
