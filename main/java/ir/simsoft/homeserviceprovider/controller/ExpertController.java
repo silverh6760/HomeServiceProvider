@@ -16,8 +16,8 @@ public class ExpertController {
     private ExpertService expertService;
     @GetMapping
     public String getConfirmNewExpertPage(Model model) {
-//       Expert expert= Auth
-//        model.addAttribute("expert",expert);
+     Expert expert= expertService.getExpertById(8);
+        model.addAttribute("expert",expert);
 
         return "expert";
     }

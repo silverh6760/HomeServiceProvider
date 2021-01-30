@@ -3,6 +3,7 @@ package ir.simsoft.homeserviceprovider.serviceclasses;
 import ir.simsoft.homeserviceprovider.repository.dao.ExpertDao;
 import ir.simsoft.homeserviceprovider.repository.dao.UserDao;
 import ir.simsoft.homeserviceprovider.repository.entity.Expert;
+import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,17 @@ public class ExpertService extends UserService{
         Optional<Expert> byId = expertDao.findById(i);
         return byId.get();
     }
+
+    public Expert getExpertByEmail(String  email) {
+        Expert byEmail = expertDao.findByEmail(email);
+        return byEmail;
+    }
     public List<Expert> findBySpecifiedField(Expert expert) {
         List<Expert> experts = expertDao.findAll(ExpertDao.findBy(expert));
         return experts;
+    }
+    public List<Expert> findAllExperts(){
+        return expertDao.findAllExperts();
     }
 
     public void updateExpert(Expert expertById) {
@@ -46,5 +55,9 @@ public class ExpertService extends UserService{
 
     public void saveExpert(Expert expertById) {
         expertDao.save(expertById);
+    }
+
+    public List<Expert> findAllExpertsBySubService(int id) {
+        return expertDao.findAllExpertsBySubService(id);
     }
 }

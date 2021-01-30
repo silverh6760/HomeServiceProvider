@@ -57,4 +57,11 @@ public interface SubServicesDao extends CrudRepository<SubServices,Integer>, Jpa
             return subServicesCriteriaQuery.getRestriction();
         };
     }
+
+    @Query("select subs from SubServices subs where subs.services.id=:id")
+    List<SubServices> findAllByService(@Param("id") int id);
+
+
+
+
 }

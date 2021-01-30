@@ -100,21 +100,21 @@
 </div>
 
 
-<div class="w-75 t-3 s-3 e-3  align-items-center" id="expertsOfServiceDiv" style="display: none" >
-    <table id="expertServiceTB" class="table center">
-        <thead>
-        <th>Expert ID</th>
-        <th>Name</th>
-        <th>Family</th>
-        <th>Email</th>
-        <th>Operation</th>
-        </thead>
+<%--<div class="w-75 t-3 s-3 e-3  align-items-center" id="expertsOfServiceDiv" style="display: none" >--%>
+<%--    <table id="expertServiceTB" class="table center">--%>
+<%--        <thead>--%>
+<%--        <th>Expert ID</th>--%>
+<%--        <th>Name</th>--%>
+<%--        <th>Family</th>--%>
+<%--        <th>Email</th>--%>
+<%--        <th>Operation</th>--%>
+<%--        </thead>--%>
 
-        <tbody>
+<%--        <tbody>--%>
 
-        </tbody>
-    </table>
-</div>
+<%--        </tbody>--%>
+<%--    </table>--%>
+<%--</div>--%>
 
 <p id="myId"></p>
 
@@ -192,7 +192,7 @@
                     msg += "<tr><td>" + value.id + "</td><td>" + value.name + "</td><td>" + value.basePrice + "</td><td>" + value.description +
                         "</td><td>" + value.services.name + "</td>" +
                         "<td><input type=\"checkbox\" class=\"form-check-input checkbox\" id=\"check\" name=\"option\" value=\"something\"></td>" +
-                        "<td><button  class=\"btn btn-sm btn-danger btnSelect1\">Experts</button></td>" +
+                        "<td><button  class=\"btn btn-sm btn-danger btnSelect1\" data-toggle=\"modal\" data-target=\"#expertOfSubModal\">Experts</button></td>" +
                         "</tr>";
                 });
                 $(msg).appendTo("#serviceTB tbody");
@@ -242,44 +242,74 @@
         }
     });
 
-    // $(".radioB").click(function () {
-    //     alert("test");
-    // });
-    // $('input:radio[name="flexRadioDefault"]').change(function(){
-    //     alert("test");
-    //     if ($(this).val() == 'Yes') {
-    //         //true
-    //     }
-    //     else {
-    //         //false
-    //     }
-    // });
-    // $("input:radio[id=radio1]").click(function() {
-    //     alert("test");
-    //         console.log("salam");
-    // })
-    // $('#expertTB tbody :radio[name="flexRadioDefault"]').change(function() {
-    //     alert("test");
-    //     console.log("salam");
-    // });
-    //     $('input:radio').OnChange(function(){
-    //         // if($(this).val() == 'Yes'){
-    //             alert("test");
-    //         // }
-    //     });
+    var subServiceID;
+    $("#serviceTB").on('click', '.btnSelect1', function () {
+        //$("#expertsOfServiceDiv").css("display", "block");
+        var table = document.getElementById("expertServiceTB");
+        for (var i = table.rows.length - 1; i > 0; i--) {
+            table.deleteRow(i);
+        }
+        // get the current row
+        var currentRow = $(this).closest("tr");
 
+         subServiceID = currentRow.find("td:eq(0)").text(); // get current row 1st TD value
+        // var subServiceName = currentRow.find("td:eq(1)").text(); // get current row 2nd TD
+        // var subServiceBasePrice = currentRow.find("td:eq(2)").text(); // get current row 2nd TD
+        // var subServiceDescription = currentRow.find("td:eq(3)").text(); // get current row 2nd TD
+        var msg="";
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/expert/findAllExpertsOfOneSubService/"+parseInt(subServiceID),
+            success: function (result) {
+                $.each(result, function (index, value) {
+                    msg += "<tr><td>" + value.id + "</td><td>" + value.name +"</td><td>"+value.family+"</td><td>"+value.email+
+                        "</td><td><button  class=\"btn btn-sm btn-danger btnSelect2\" data-toggle=\"modal\" data-target=\"#deleteModal\">Delete</button></td></tr>";
+                });
+                $(msg).appendTo("#expertServiceTB tbody");
+            },
+            error: function (result) {
+                $("#myId").text(JSON.stringify(result));
+            }
+        });
 
-    // $(".radioB").click(function (){
-    //     $("#serviceDiv").css("display", "block");
-    //     document.getElementById("myId").innerText="Hello";
-    // });
+    });
 
-    // $(".radioB").attr('checked', 'checked').each(function (){
-    //     $("#serviceDiv").css("display", "block");
-    //     document.getElementById("myId").innerText="Hello";
-    // });
 
 </script>
+
+<!--------------INSERT MODAL------------------>
+<div class="modal" id="expertOfSubModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Enter New Information Please...</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div  id="expertsOfServiceDiv" >
+                    <table id="expertServiceTB" class="table center">
+                        <thead>
+                        <th>Expert ID</th>
+                        <th>Name</th>
+                        <th>Family</th>
+                        <th>Email</th>
+                        <th>Operation</th>
+                        </thead>
+
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <p id="result"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="insertExpert" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-------------------------------------------->
 <!---------DELETE MODAL--------------->
 <div class="modal" id="deleteModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -291,39 +321,42 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are You Sure You Want to Delete the Ticket?</p>
+                <p>Are You Sure You Want to Delete the Expert?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
-                <button type="button" id="deleteTicket" class="btn btn-danger" data-dismiss="modal">DELETE</button>
+                <button type="button" id="deleteExpertFromSub" class="btn btn-danger" data-dismiss="modal">DELETE</button>
             </div>
         </div>
     </div>
 </div>
 <script>
     /*******delete expert from Services********************/
-    // $("#tb").on('click', '.btnSelect2', function () {
-    //     // get the current row
-    //     var currentRow = $(this).closest("tr");
-    //
-    //     var ticketId = currentRow.find("td:eq(0)").text(); // get current row 1st TD value
-    //
-    //     $("#deleteTicket").click(function (){
-    //
-    //         $.ajax({
-    //             type:"DELETE",
-    //             url:"http://localhost:8080/TicketHibernate_war/api/tickets/"+parseInt(ticketId),
-    //             success :function (result){
-    //                 currentRow.remove();
-    //             },
-    //             error:function (result){
-    //                 document.getElementById("myId").innerText = JSON.stringify(result);
-    //             }
-    //         });
-    //
-    //     });
-    //
-    // });
+    var expertId;
+    var expertCurrentRow
+    $("#expertServiceTB").on('click', '.btnSelect2', function () {
+        // get the current row
+        expertCurrentRow = $(this).closest("tr");
+
+        expertId = expertCurrentRow.find("td:eq(0)").text();
+    });// get current row 1st TD value
+
+        $("#deleteExpertFromSub").click(function (){
+
+            $.ajax({
+                type:"DELETE",
+                url:"http://localhost:8080/expert/deleteOneExpertsOfOneSubService/"+parseInt(subServiceID),
+                data:{"expertId":expertID},
+                success :function (result){
+                    expertCurrentRow.remove();
+                    document.getElementById("result").innerText = JSON.stringify(result);
+                },
+                error:function (result){
+                    document.getElementById("result").innerText = JSON.stringify(result);
+                }
+            });
+
+        });
 </script>
 <!---------------------------------->
 </body>

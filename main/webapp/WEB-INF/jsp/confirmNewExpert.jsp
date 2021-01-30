@@ -63,10 +63,12 @@
             success: function (result) {
                 console.log("salam");
                 $.each(result, function (index, value) {
-                    msg += "<tr><td>" + value.id + "</td><td>" + value.name + "</td><td>" + value.family + "</td><td>" + value.email +
-                        "<td>" + value.confirmationState + "</td><td>" + value.photo + "</td>" +
-                        "<td><button class=\"btn btn-sm btn-success btnSelect\" data-toggle=\"modal\" data-target=\"#editModal\">Confirm</button>" +
-                        "<button  class=\"btn btn-sm btn-danger btnSelect2\" data-toggle=\"modal\" data-target=\"#deleteModal\">Delete</button></td></tr>";
+                    if(value.confirmationState!=="CONFIRMED") {
+                        msg += "<tr><td>" + value.id + "</td><td>" + value.name + "</td><td>" + value.family + "</td><td>" + value.email +
+                            "<td>" + value.confirmationState + "</td><td>" + value.photo + "</td>" +
+                            "<td><button class=\"btn btn-sm btn-success btnSelect\" data-toggle=\"modal\" data-target=\"#editModal\">Confirm</button>" +
+                            "<button  class=\"btn btn-sm btn-danger btnSelect2\" data-toggle=\"modal\" data-target=\"#deleteModal\">Delete</button></td></tr>";
+                    }
                 });
                 $(msg).appendTo("#tb tbody");
             },
@@ -168,17 +170,18 @@
         var tableRow = $("table td").filter(function () {
             return $(this).text() === globalTicketId;
         }).closest("tr");
-        tableRow.find("td:eq(4)").text("CONFIRMED"); // get current row 1st TD value
-        $.ajax({
-            type: "PUT",
-            url: "http://localhost:8080/expert/" + parseInt(globalTicketId),
-            success: function (result) {
-                document.getElementById("myId").innerText = JSON.stringify(result);
-            },
-            error: function (result) {
-                document.getElementById("myId").innerText = JSON.stringify(result.responseText);
-            }
-        });
+            tableRow.find("td:eq(4)").text("CONFIRMED"); // get current row 1st TD value
+            $.ajax({
+                type: "PUT",
+                url: "http://localhost:8080/expert/" + parseInt(globalTicketId),
+                success: function (result) {
+                    document.getElementById("myId").innerText = JSON.stringify(result);
+                },
+                error: function (result) {
+                    document.getElementById("myId").innerText = JSON.stringify(result.responseText);
+                }
+            })
+            tableRow.find(".btnSelect").prop("disabled",true);
     });
     /****************END*********************/
 

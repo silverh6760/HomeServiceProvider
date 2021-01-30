@@ -11,9 +11,9 @@ public class Category {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @JsonIgnore
-    @OneToMany(mappedBy = "category")
-    List<SubCategory> subCategoryList =new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "category")
+//    List<SubCategory> subCategoryList =new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -31,13 +31,13 @@ public class Category {
         this.name = name;
     }
 
-    public List<SubCategory> getSubCategoryList() {
-        return subCategoryList;
-    }
-
-    public void setSubCategoryList(List<SubCategory> subCategoryList) {
-        this.subCategoryList = subCategoryList;
-    }
+//    public List<SubCategory> getSubCategoryList() {
+//        return subCategoryList;
+//    }
+//
+//    public void setSubCategoryList(List<SubCategory> subCategoryList) {
+//        this.subCategoryList = subCategoryList;
+//    }
 
     @Override
     public String toString() {

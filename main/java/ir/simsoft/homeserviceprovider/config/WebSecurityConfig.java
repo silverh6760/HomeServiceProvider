@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -21,6 +22,9 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private MySimpleUrlAuthenticationSuccessHandler successHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -31,12 +35,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/user","/","/home","/user/home/**","/user/register","/user/welcome/**").permitAll()
-                .antMatchers("/expertPage").hasAnyAuthority("EXPERT")
+                .antMatchers("/user/**","/","/home","/user/home/**","/user/register","/user/welcome/**").permitAll()
+                .antMatchers("/expertPage/**").hasAnyAuthority("EXPERT")
                 .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
                 //.antMatchers(HttpMethod.POST,"/user/register","/user/register/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/user/checkPassword","/user/checkPassword/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/user/checkEmail","/user/checkEmail/**").permitAll()
+//                .antMatchers(HttpMethod.POST,"/user/checkFileSize","/user/checkFileSize/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
@@ -45,10 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/doLogin")
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/home").permitAll()
+                .successHandler(successHandler)
+//                .defaultSuccessUrl("/home").permitAll()
+//                .successForwardUrl()
                 .failureUrl("/home/loginError")
                 .permitAll()
-
                 .and()
                 .logout()
                 .permitAll()
@@ -71,4 +77,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
+
+//    @Bean
+//    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+//        return new MySimpleUrlAuthenticationSuccessHandler();
+//    }
 }

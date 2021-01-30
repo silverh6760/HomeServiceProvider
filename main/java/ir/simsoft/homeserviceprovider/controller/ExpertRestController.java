@@ -5,7 +5,6 @@ import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
 import ir.simsoft.homeserviceprovider.repository.entity.User;
 import ir.simsoft.homeserviceprovider.repository.enums.ConfirmationState;
-import ir.simsoft.homeserviceprovider.repository.enums.UserRole;
 import ir.simsoft.homeserviceprovider.serviceclasses.ExpertService;
 import ir.simsoft.homeserviceprovider.serviceclasses.SubServicesService;
 import ir.simsoft.homeserviceprovider.serviceclasses.UserService;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,9 +37,9 @@ public class ExpertRestController {
     /*******Rest Methods**************/
     @GetMapping("/allExperts")
     @ResponseBody
-    public List<User> getUsers(){
-        List<User> users = userService.getExperts(UserRole.EXPERT);
-        return users;
+    public List<Expert> getUsers(){
+        List<Expert> experts = expertService.findAllExperts();
+        return experts;
     }
 
     @GetMapping("/{id}")
@@ -81,30 +79,37 @@ public class ExpertRestController {
         return ResponseEntity.ok("Expert with id= "+ id + " is deleted.");
     }
 
-    @PostMapping(path = "assignService/{id}")
-    public ResponseEntity assignServiceToExpert(@PathVariable("id")int id
+    @PostMapping(path = "assignService/{email}")
+    public ResponseEntity assignServiceToExpert(@PathVariable("email")String email
             ,@RequestParam(value = "subServiceName") String subServiceName){
 
-        SubServices subServices = subServicesService.FindSubServiceByName(subServiceName);
+        SubServices subServices = subServicesService.findSubServiceByName(subServiceName);
         System.out.println(subServices);
         if(subServices==null){
            throw new NullPointerException(BusinessException.nullPointerForSubService);
        }
        else {
-           Expert expertById = expertService.getExpertById(id);
-           if(expertById==null)
-               throw new NullPointerException(BusinessException.nullPointerForExpert);
-           else{
-               for(SubServices element:expertById.getSubServicesList()){
-                   if(element.equals(subServices)){
-                       return ResponseEntity.badRequest().body("The Service of "+subServiceName+" already exists!!");
+           Expert expertByEmail = expertService.getExpertByEmail(email);
+           if(expertByEmail!=null) {
+               if (expertByEmail.getConfirmationState().equals(ConfirmationState.CONFIRMED)){
+                   for (SubServices element : expertByEmail.getSubServicesList()) {
+                       if (element.equals(subServices)) {
+                           return ResponseEntity.badRequest().body("The Service of " + subServiceName + " already exists!!");
+                       }
                    }
-               }
-               expertById.getSubServicesList().add(subServices);
-//               subServices.getExpertList().add(expertById);
+               expertByEmail.getSubServicesList().add(subServices);
+//               subServices.getExpertList().add(expertByEmail);
 //               subServicesService.updateSubService(subServices);
-               expertService.updateExpert(expertById);
-               return ResponseEntity.ok("The Service of "+subServiceName+" is Successfully Assigned");
+               expertService.updateExpert(expertByEmail);
+               return ResponseEntity.ok("The Service of " + subServiceName + " is Successfully Assigned");
+            }
+               else{
+                   return ResponseEntity.badRequest().body("The Expert is not Confirmed");
+               }
+           }
+
+           else{
+               throw new NullPointerException(BusinessException.nullPointerForExpert);
            }
        }
     }
@@ -116,4 +121,38 @@ public class ExpertRestController {
         return expertService.findBySpecifiedField(expert);
     }
 
+    @GetMapping("/findAllExpertsOfOneSubService/{id}")
+    @ResponseBody
+    public List<Expert> findAllExpertsOfOneSubService(@PathVariable("id") int id){
+        List<Expert> allExpertsBySubService = expertService.findAllExpertsBySubService(id);
+        return allExpertsBySubService;
+    }
+
+    @DeleteMapping("/deleteOneExpertsOfOneSubService/{id}")
+    @ResponseBody
+    public ResponseEntity deleteExpertsOfOneSubService(@PathVariable("id") int id ,
+                                                     @RequestParam(value = "expertEmail") String expertEmail){
+        Expert expertByEmail = expertService.getExpertByEmail(expertEmail);
+        for(int i=expertByEmail.getSubServicesList().size()-1;i>=0;i--){
+            if(expertByEmail.getSubServicesList().get(i).getId().equals(id)){
+                expertByEmail.getSubServicesList().remove(i);
+                expertService.saveExpert(expertByEmail);
+                return ResponseEntity.ok("the expert delete from subService");
+            }
+        }
+        return ResponseEntity.badRequest().body("Not Found!");
+    }
+
+    @GetMapping("/getAssignedSubServices/{email}")
+    public List<SubServices> getAssignedSubServices(@PathVariable("email") String email){
+
+        Expert expertByEmail = expertService.getExpertByEmail(email);
+        return expertByEmail.getSubServicesList();
+    }
+
+//    @GetMapping("/getExpertID/{email}")
+//    public List<SubServices> getAssignedSubServices(@PathVariable("email") String email){
+//        Expert expertById = expertService.getExpertById(id);
+//        return expertById.getSubServicesList();
+//    }
 }

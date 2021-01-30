@@ -28,4 +28,12 @@ public class ServicesService {
     public Services getServiceByName(String category) {
         return servicesDao.findByName(category).get();
     }
+
+    public Services getServiceById(int id) {
+        return servicesDao.findById(id).get();
+    }
+
+    public void deleteServiceByID(int id) {
+        servicesDao.deleteById(id);
+    }
 }

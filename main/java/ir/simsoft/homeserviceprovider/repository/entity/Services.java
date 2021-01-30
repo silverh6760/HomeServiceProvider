@@ -14,9 +14,9 @@ public class Services {
     private String name;
     @OneToOne
     private Category category;
-    @JsonIgnore
-    @OneToMany(mappedBy = "services")
-    private List<SubServices> subServicesList=new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "services")
+//    private List<SubServices> subServicesList=new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -42,13 +42,13 @@ public class Services {
         this.category = category;
     }
 
-    public List<SubServices> getSubServicesList() {
-        return subServicesList;
-    }
-
-    public void setSubServicesList(List<SubServices> subServicesList) {
-        this.subServicesList = subServicesList;
-    }
+//    public List<SubServices> getSubServicesList() {
+//        return subServicesList;
+//    }
+//
+//    public void setSubServicesList(List<SubServices> subServicesList) {
+//        this.subServicesList = subServicesList;
+//    }
 
     @Override
     public String toString() {

@@ -4,7 +4,9 @@ import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
@@ -42,6 +44,7 @@ public interface ExpertDao extends CrudRepository<Expert, Integer>, JpaSpecifica
             if (Objects.nonNull(expert.getConfirmationState())) {
                 conditions.add(criteriaBuilder.equal(root.get("confirmationState"), expert.getConfirmationState()));
             }
+            conditions.add(criteriaBuilder.equal(root.get("enabled"),true));
             CriteriaQuery<Expert> expertCriteriaQuery = query.select(root)
                     .where(conditions.toArray(new Predicate[]{}));
             return expertCriteriaQuery.getRestriction();
@@ -49,4 +52,14 @@ public interface ExpertDao extends CrudRepository<Expert, Integer>, JpaSpecifica
     }
 
     Expert findByEmail(String email);
+
+    @Query("select e from Expert e where e.enabled=true")
+    List<Expert> findAllExperts();
+
+    @Query("select e from Expert e join e.subServicesList subs where subs.id=:id")
+    List<Expert> findAllExpertsBySubService(@Param("id") int id);
+
+
+
+
 }

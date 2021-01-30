@@ -9,7 +9,6 @@ import ir.simsoft.homeserviceprovider.serviceclasses.ConfirmationTokenService;
 import ir.simsoft.homeserviceprovider.serviceclasses.ExpertService;
 import ir.simsoft.homeserviceprovider.serviceclasses.FileUploadUtil;
 import ir.simsoft.homeserviceprovider.serviceclasses.UserService;
-import org.dom4j.rule.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -61,8 +60,6 @@ public class UserController {
     }
     @GetMapping("/home/loginPage")
     public String getLoginPage(Model model){
-//        User user = new User();
-//        model.addAttribute("user",user);
         return "loginPage";
     }
     @GetMapping("/home/loginError")
@@ -95,6 +92,17 @@ public class UserController {
             return false;
     }
 
+    @PostMapping("/checkFileSize")
+    @ResponseBody
+    public Boolean checkImageSize(@RequestParam("multipartFile") MultipartFile multipartFile){
+
+        if(multipartFile.getSize()>512000){
+            return false;
+        }
+        else
+            return true;
+    }
+
     @PostMapping
     @ResponseBody
     public ResponseEntity saveAdmin(@RequestBody User user){
@@ -114,44 +122,90 @@ public class UserController {
     public String getRegistrationPage(Model model){
         User user =new User();
         model.addAttribute("user",user);
-        List<String> userRoleList = Arrays.asList("EXPERT", "CUSTOMER","ADMIN");
+        List<String> userRoleList = Arrays.asList("--","CUSTOMER","EXPERT","ADMIN");
+        String photoSizeMessage="";
+//        String photoFormatMessage="The file's format is wrong!";
+        model.addAttribute("photoSizeMessage",photoSizeMessage);
+//        model.addAttribute("photoFormatMessage",photoFormatMessage);
         model.addAttribute("userRoleList", userRoleList);
         return "register";
     }
 
+
     @PostMapping("/register")
-    public ModelAndView registerUser(@ModelAttribute("user") User user,@RequestParam("image") MultipartFile multipartFile) throws IOException {
-        // studentList.add(student);
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        if(user.getUserRole().equals(UserRole.EXPERT)){
-            Expert expert=new Expert();
-            expert.setConfirmationState(ConfirmationState.WAITING_TO_BE_CONFIRMED);
-            expert.setUserRole(user.getUserRole());
-            expert.setPassword(user.getPassword());
-            expert.setName(user.getName());
-            expert.setFamily(user.getFamily());
-            expert.setEmail(user.getEmail());
-            expert.setPhoto(fileName);
-            Expert savedExpert=expertService.registerExpert(expert);
-            String uploadDir = "user-photos/" + savedExpert.getId();
-            fileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-            ConfirmationToken confirmationToken = new ConfirmationToken(expert);
-            confirmationTokenService.saveConfirmationToken(confirmationToken);
-            userService.sendConfirmationMail(user.getEmail(), confirmationToken.getConfirmationToken());
+    public String registerUser(@ModelAttribute("user") User user , Model model,
+                               @RequestParam("image") MultipartFile multipartFile ,
+                               RedirectAttributes redirectAttributes) throws IOException {
 
-        }else{
-            User savedUser = userService.registerUser(user);
-            ConfirmationToken confirmationToken = new ConfirmationToken(user);
-            confirmationTokenService.saveConfirmationToken(confirmationToken);
-            userService.sendConfirmationMail(user.getEmail(), confirmationToken.getConfirmationToken());
+        try {
+            if(user.getName().length()>10 || user.getFamily().length()>20){
+                redirectAttributes.addFlashAttribute("message2", "Text Limit Size Exceeds!");
+                return "redirect:register";
+            }
+            if(userService.checkUserEmail(user).isPresent()){
+                redirectAttributes.addFlashAttribute("message", "The Email Already Exists!");
+                return "redirect:register";
+            }
+            if(userService.checkPassword(user)==true){
+                redirectAttributes.addFlashAttribute("message", "The Password Format is wrong!");
+                return "redirect:register";
+            }
+
+            if(user.getName().length()>10 || user.getFamily().length()>20){
+                redirectAttributes.addFlashAttribute("message2", "Text Limit Size Exceeds!");
+                return "redirect:register";
+            }
+            if (multipartFile.isEmpty()) {
+                redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+                return "redirect:register";
+            }
+            else if(multipartFile.getSize() > 512000){
+                redirectAttributes.addFlashAttribute("message", "Please select a file with size of 500 kB or less");
+                return "redirect:register";
+            }
+            else if(!StringUtils.cleanPath(multipartFile.getOriginalFilename()).endsWith(".jpg")){
+                redirectAttributes.addFlashAttribute("message", "The format is wrong!!");
+                return "redirect:register";
+            }
+
+
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+            if (user.getUserRole().equals(UserRole.EXPERT)) {
+                Expert expert = new Expert();
+                expert.setConfirmationState(ConfirmationState.WAITING_TO_BE_CONFIRMED);
+                expert.setUserRole(user.getUserRole());
+                expert.setPassword(user.getPassword());
+                expert.setName(user.getName());
+                expert.setFamily(user.getFamily());
+                expert.setEmail(user.getEmail());
+                expert.setPhoto(fileName);
+                Expert savedExpert = expertService.registerExpert(expert);
+                String uploadDir = "user-photos/" + savedExpert.getId();
+                fileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+                ConfirmationToken confirmationToken = new ConfirmationToken(expert);
+                confirmationTokenService.saveConfirmationToken(confirmationToken);
+                userService.sendConfirmationMail(user.getEmail(), confirmationToken.getConfirmationToken());
+
+            } else {
+                User savedUser = userService.registerUser(user);
+                ConfirmationToken confirmationToken = new ConfirmationToken(user);
+                confirmationTokenService.saveConfirmationToken(confirmationToken);
+                userService.sendConfirmationMail(user.getEmail(), confirmationToken.getConfirmationToken());
+            }
+
+        } catch (Exception m) {
+            System.out.println("hshhshhshh");
+            System.out.println(m.getMessage());
         }
-//        User savedUser = userService.registerUser(user);
-//        String uploadDir = "user-photos/" + savedUser.getId();
-//        fileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-//
+        model.addAttribute(user);
+        //ModelAndView modelAndView = new ModelAndView("welcome", "user", user);
+        return "welcome";
 
-        ModelAndView modelAndView = new ModelAndView("welcome", "user", user);
-        return modelAndView;
+    }
+    @GetMapping("/uploadStatus")
+    public String uploadStatus() {
+        return "uploadStatus";
     }
     /*****************************************/
 //    @GetMapping("/sign-in")

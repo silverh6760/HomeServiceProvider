@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
     <meta charset="utf-8">
@@ -20,25 +21,23 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <title>Expert Page | Welcome</title>
 </head>
-<body>
+<body onload="adminFunction()">
 <h2>
-    <c:if test="${not empty expert }">
-        <p>Hello ${expert.name}</p>
-    </c:if>
+    <security:authorize access="isAuthenticated()">
+        authenticated as <security:authentication property="principal.username" />
+    </security:authorize>
+<%--    <c:if test="${not empty expert }">--%>
+<%--        <p>Hello ${expert.name}</p>--%>
+<%--    </c:if>--%>
 
-    <c:if test="${empty expert }">
-<%--        <script>var expertId="${expert.id}"</script>--%>
-        <p>Hello guest</p>
-    </c:if>
+<%--    <c:if test="${empty expert }">--%>
+<%--&lt;%&ndash;        <script>var expertId="${expert.id}"</script>&ndash;%&gt;--%>
+<%--        <p>Hello guest</p>--%>
+<%--    </c:if>--%>
+    <span id="spa"></span>
+
 
 </h2>
-<%--private String name;--%>
-<%--private Long basePrice;--%>
-<%--private String description;--%>
-<%--@OneToOne--%>
-<%--private SubCategory subCategory;--%>
-<%--@ManyToOne--%>
-<%--private Services services;--%>
 <form>
     <div class="w-75 t-3 s-3 e-3  align-items-center">
         <table class="table">
@@ -73,9 +72,39 @@
 <button id="select" class="btn btn-primary">Select</button>
 
 <p id="myId"></p>
+<br>
 
+<button id="getExpertSubService" class="btn btn-primary">See Assigned SubServices</button><br>
+
+<table id="assignedSubServicesTB" class="table center">
+    <thead><th>SubService ID</th><th>Name</th><th>Base Price</th><th>Description</th>
+    <th>Category</th><th>Operation</th></thead>
+
+    <tbody>
+
+    </tbody>
+</table>
+<p id="result"></p>
 
 <script>
+    var expertEmail;
+
+    /**********get expert email****************/
+    function adminFunction(){
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/username",
+            success: function (result) {
+                expertEmail=result;
+                alert(expertEmail);
+            },
+            error: function (result) {
+                $("#myId").text(JSON.stringify(result));
+            }
+        });
+    }
+
+    $("#spa").append(expertEmail);
     /********Get All Sub Services********************/
     $("#getAll").click(function () {
         var msg = "";
@@ -110,30 +139,32 @@
         });
     });
 
-    // $("#getAll").click(function(){
-    //     var msg="";
-    //     var table = document.getElementById("tb");
-    //     for(var i = table.rows.length - 1; i > 0; i--)
-    //     {
-    //         table.deleteRow(i);
-    //     }
-    //     $.ajax({
-    //         type:"GET",
-    //         url:"http://localhost:8080/ServiceManagement/allSubServices",
-    //         success :function (result){
-    //             $.each(result,function(index,value){
-    //                 msg+="<tr><td>"+value.name+"</td><td>"+value.basePrice+"</td><td>"+value.description+"</td><td>"+value.subCategory.name+
-    //                     "<td>"+value.services.name+"</td>"+
-    //                     "<td><input type=\"checkbox\" class=\"form-check-input checkbox\" id=\"check\" name=\"option\" value=\"something\"></td></tr>";
-    //             });
-    //             $(msg).appendTo("#tb tbody");
-    //         },
-    //         error:function (result){
-    //             $("#myId").text(JSON.stringify(result));
-    //         }
-    //     });
-    //
-    // });
+    /************get Assigned SubServices*******/
+
+    $("#getExpertSubService").click(function(){
+        var msg="";
+        var table = document.getElementById("assignedSubServicesTB");
+        for(var i = table.rows.length - 1; i > 0; i--)
+        {
+            table.deleteRow(i);
+        }
+        $.ajax({
+            type:"GET",
+            url:"http://localhost:8080/expert/getAssignedSubServices/"+expertEmail,
+            success :function (result){
+                $.each(result,function(index,value){
+                    msg+="<tr><td>"+value.id+"</td><td>"+value.name+"</td><td>"+value.basePrice+"</td><td>"+value.description+"</td>"+
+                        "<td>"+value.services.name+"</td>"+
+                        "<td><button  class=\"btn btn-sm btn-danger btnSelect2\" data-toggle=\"modal\" data-target=\"#deleteModal\">Delete</button></td></tr>";
+                });
+                $(msg).appendTo("#assignedSubServicesTB tbody");
+            },
+            error:function (result){
+                $("#result").text(JSON.stringify(result));
+            }
+        });
+
+    });
 
     /********Check Box Checked Event********************/
 
@@ -153,7 +184,7 @@
                 //alert(parseInt(expertId));
                 $.ajax({
                     type:"POST",
-                    url:"http://localhost:8080/expert/assignService/"+${expert.id},
+                    url:"http://localhost:8080/expert/assignService/"+expertEmail,
                     data: {"subServiceName":subServiceName},
                     dataType:"json",
                     //contentType: 'application/json; charset=utf-8',
@@ -180,6 +211,53 @@
     //         arrayOfRows.push($(this).closest('tr'));
     //     }
     // });
+</script>
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are You Sure You Want to Delete the Subservice?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                <button type="button" id="deleteExpertFromSub" class="btn btn-danger" data-dismiss="modal">DELETE</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /*******delete expert from Services********************/
+    var subServiceID;
+    var subServiceCurrentRow
+    $("#assignedSubServicesTB").on('click', '.btnSelect2', function () {
+        // get the current row
+        subServiceCurrentRow = $(this).closest("tr");
+
+        subServiceID = subServiceCurrentRow.find("td:eq(0)").text();
+    });// get current row 1st TD value
+
+    $("#deleteExpertFromSub").click(function (){
+
+        $.ajax({
+            type:"DELETE",
+            url:"http://localhost:8080/expert/deleteOneExpertsOfOneSubService/"+parseInt(subServiceID),
+            data:{"expertEmail":expertEmail},
+            success :function (result){
+                subServiceCurrentRow.remove();
+                document.getElementById("result").innerText = JSON.stringify(result);
+            },
+            error:function (result){
+                document.getElementById("result").innerText = JSON.stringify(result);
+            }
+        });
+
+    });
 </script>
 </body>
 </html>
