@@ -5,6 +5,7 @@ import ir.simsoft.homeserviceprovider.repository.entity.*;
 import ir.simsoft.homeserviceprovider.serviceclasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Book;
@@ -35,6 +36,18 @@ public class ServicesRestController {
     @ResponseBody
     public List<Services> getAllServices(){
         List<Services> servicesList=servicesService.getAllServices();
+        return servicesList;
+    }
+    @GetMapping("/allFullServices")
+    @ResponseBody
+    public List<Services> getAllFullServices(){
+        List<Services> servicesList=servicesService.getAllServices();
+        for(int i=servicesList.size()-1;i>=0;i--){
+            List<SubServices> subServicesBySerID = subServicesService.getSubServicesBySerID(servicesList.get(i).getId());
+            if(subServicesBySerID.isEmpty()){
+                servicesList.remove(i);
+            }
+        }
         return servicesList;
     }
 
@@ -120,6 +133,11 @@ public class ServicesRestController {
     @GetMapping("/allSubServices/{category}")
     public List<SubServices> getSubServices(@PathVariable("category") String category){
         List<SubServices> subServices=subServicesService.getSubServices(category);
+        return subServices;
+    }
+    @GetMapping("/allSubServicesByID/{id}")
+    public List<SubServices> getSubServicesBySerID(@PathVariable("id") int id){
+        List<SubServices> subServices=subServicesService.getSubServicesBySerID(id);
         return subServices;
     }
 
@@ -227,6 +245,13 @@ public class ServicesRestController {
             throw new NullPointerException(BusinessException.nullPointerForService);
         }
     }
+
+    @GetMapping("/getOneSubService/{subServiceId}")
+    public SubServices getOneSubService(@PathVariable("subServiceId")int id){
+        SubServices subServiceByID = subServicesService.findSubServiceByID(id);
+        return subServiceByID;
+    }
+
 
 //    @GetMapping(path = "deleteSubService")
 //    @ResponseBody

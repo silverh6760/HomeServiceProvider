@@ -38,7 +38,10 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
             } else if (grantedAuthority.getAuthority().equals("ADMIN")) {
                 hasAdminRole = true;
                 break;
-            }
+            }  else if (grantedAuthority.getAuthority().equals("CUSTOMER")) {
+            hasCustomerRole = true;
+            break;
+        }
         }
 
         if (hasExpertRole) {

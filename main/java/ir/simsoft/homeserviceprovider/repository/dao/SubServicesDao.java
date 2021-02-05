@@ -25,6 +25,9 @@ public interface SubServicesDao extends CrudRepository<SubServices,Integer>, Jpa
     @Query("select subs from SubServices subs where subs.services.name=:category")
     List<SubServices> getSubServices(@Param("category") String category);
 
+    @Query("select subs from SubServices subs where subs.services.id=:id")
+    List<SubServices> getSubServicesBySerId(@Param("id") int id);
+
 //    @Query("select subs from SubServices subs where subs.name=:name ")
     SubServices findByName( String name);
 

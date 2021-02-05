@@ -22,4 +22,6 @@ public interface UserDao extends CrudRepository<User,Integer> {
     @Modifying
     @Query(value="DELETE FROM User user WHERE user.userRole=:userRole")
     void deleteAllExperts(@Param("userRole")UserRole userRole);
+
+    User findByEmail(String email);
 }

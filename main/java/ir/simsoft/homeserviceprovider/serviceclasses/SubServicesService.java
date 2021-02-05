@@ -24,6 +24,9 @@ public class SubServicesService {
     public List<SubServices> getSubServices(String category) {
         return subServicesDao.getSubServices(category);
     }
+    public List<SubServices> getSubServicesBySerID(int id) {
+        return subServicesDao.getSubServicesBySerId(id);
+    }
 
     public SubServices insertSubService(SubServices subServices) {
         return subServicesDao.save(subServices);

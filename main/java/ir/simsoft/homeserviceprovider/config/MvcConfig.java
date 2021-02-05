@@ -13,7 +13,13 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
         exposeDirectory("user-photos", registry);
+//        registry.addResourceHandler("webapp/resources/**")
+//
+//                .addResourceLocations("webapp/resources/theme/")
+//
+//                .setCachePeriod(31556926);
     }
 
     private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {

@@ -1,14 +1,10 @@
 package ir.simsoft.homeserviceprovider.controller;
 
-import ir.simsoft.homeserviceprovider.repository.entity.ConfirmationToken;
-import ir.simsoft.homeserviceprovider.repository.entity.Expert;
-import ir.simsoft.homeserviceprovider.repository.entity.User;
+import ir.simsoft.homeserviceprovider.repository.entity.*;
 import ir.simsoft.homeserviceprovider.repository.enums.ConfirmationState;
+import ir.simsoft.homeserviceprovider.repository.enums.OrderState;
 import ir.simsoft.homeserviceprovider.repository.enums.UserRole;
-import ir.simsoft.homeserviceprovider.serviceclasses.ConfirmationTokenService;
-import ir.simsoft.homeserviceprovider.serviceclasses.ExpertService;
-import ir.simsoft.homeserviceprovider.serviceclasses.FileUploadUtil;
-import ir.simsoft.homeserviceprovider.serviceclasses.UserService;
+import ir.simsoft.homeserviceprovider.serviceclasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping({"/user","/"})
@@ -31,20 +25,25 @@ public class UserController {
     private ConfirmationTokenService confirmationTokenService;
     private FileUploadUtil fileUploadUtil;
     private ExpertService expertService;
+    private SubServicesService subServicesService;
+    private OrdersService ordersService;
 
     @Autowired
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService,
-                          FileUploadUtil fileUploadUtil, ExpertService expertService) {
+                          FileUploadUtil fileUploadUtil, ExpertService expertService,
+                          SubServicesService subServicesService,OrdersService ordersService) {
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.fileUploadUtil = fileUploadUtil;
         this.expertService = expertService;
+        this.subServicesService=subServicesService;
+        this.ordersService=ordersService;
     }
 
 
     @GetMapping
     public String hello(){
-        return "welcome";
+        return "home";
     }
 
     @GetMapping("/allUsers")
@@ -54,22 +53,35 @@ public class UserController {
         return users;
     }
 /***********Login*****************/
-    @GetMapping("/home")
-    public String getHomePage(){
-        return "home";
-    }
-    @GetMapping("/home/loginPage")
+    @GetMapping("/loginPage")
     public String getLoginPage(Model model){
         return "loginPage";
     }
-    @GetMapping("/home/loginError")
+    @GetMapping("/loginError")
     public String getLoginErrorPage(Model model){
         model.addAttribute("login_error", "username or password incorrect!");
         return "loginPage";
     }
     //@PostMapping()
 
-    /*****************************/
+    /*************For Book an Order****************/
+
+    @GetMapping("/subService/{id}")
+    public String getSubServicePage(@PathVariable("id") int id, Model model){
+        SubServices subServiceByID = subServicesService.findSubServiceByID(id);
+        model.addAttribute("subServiceByID",subServiceByID);
+//        Orders orders =new Orders();
+//        model.addAttribute(orders);
+        return "subService";
+    }
+
+//    @GetMapping("/customer/orders/{email}")
+//    @ResponseBody
+//    public List<Orders> getCustomerOrders(@PathVariable("email") String email){
+//        List<Orders> ordersList=ordersService.getAllOrdersByCustomerEmailForExpertSelection(email);
+//        return ordersList;
+//    }
+
     @PreAuthorize("permitAll()")
     @PostMapping("/checkEmail")
     @ResponseBody
@@ -146,7 +158,7 @@ public class UserController {
                 redirectAttributes.addFlashAttribute("message", "The Email Already Exists!");
                 return "redirect:register";
             }
-            if(userService.checkPassword(user)==true){
+            if(userService.checkPassword(user)==false){
                 redirectAttributes.addFlashAttribute("message", "The Password Format is wrong!");
                 return "redirect:register";
             }
@@ -155,23 +167,24 @@ public class UserController {
                 redirectAttributes.addFlashAttribute("message2", "Text Limit Size Exceeds!");
                 return "redirect:register";
             }
-            if (multipartFile.isEmpty()) {
-                redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-                return "redirect:register";
-            }
-            else if(multipartFile.getSize() > 512000){
-                redirectAttributes.addFlashAttribute("message", "Please select a file with size of 500 kB or less");
-                return "redirect:register";
-            }
-            else if(!StringUtils.cleanPath(multipartFile.getOriginalFilename()).endsWith(".jpg")){
-                redirectAttributes.addFlashAttribute("message", "The format is wrong!!");
-                return "redirect:register";
-            }
+
 
 
             String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 
             if (user.getUserRole().equals(UserRole.EXPERT)) {
+                if (multipartFile.isEmpty()) {
+                    redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+                    return "redirect:register";
+                }
+                else if(multipartFile.getSize() > 512000){
+                    redirectAttributes.addFlashAttribute("message", "Please select a file with size of 500 kB or less");
+                    return "redirect:register";
+                }
+                else if(!StringUtils.cleanPath(multipartFile.getOriginalFilename()).endsWith(".jpg")){
+                    redirectAttributes.addFlashAttribute("message", "The format is wrong!!");
+                    return "redirect:register";
+                }
                 Expert expert = new Expert();
                 expert.setConfirmationState(ConfirmationState.WAITING_TO_BE_CONFIRMED);
                 expert.setUserRole(user.getUserRole());
@@ -187,7 +200,11 @@ public class UserController {
                 confirmationTokenService.saveConfirmationToken(confirmationToken);
                 userService.sendConfirmationMail(user.getEmail(), confirmationToken.getConfirmationToken());
 
-            } else {
+//            }else if(user.getUserRole().equals(UserRole.CUSTOMER)){
+//
+//
+            }
+            else {
                 User savedUser = userService.registerUser(user);
                 ConfirmationToken confirmationToken = new ConfirmationToken(user);
                 confirmationTokenService.saveConfirmationToken(confirmationToken);
@@ -208,27 +225,6 @@ public class UserController {
         return "uploadStatus";
     }
     /*****************************************/
-//    @GetMapping("/sign-in")
-//    String signIn() {
-//
-//        return "sign-in.html";
-//    }
-//
-//    @GetMapping("/sign-up")
-//    String signUp() {
-//
-//        return "sign-up.html";
-//    }
-//
-//    @PostMapping("/sign-up")
-//    String signUp(User user) {
-//
-//        userService.registerUser(user);
-//        ConfirmationToken confirmationToken=new ConfirmationToken(user);
-//        userService.sendConfirmationMail(user.getEmail(),confirmationToken.getConfirmationToken());
-//
-//        return "redirect:/sign-in.html";
-//    }
 
     @GetMapping("/confirm")
     String confirmMail(@RequestParam("token") String confirmationToken,Model model) {
@@ -249,7 +245,6 @@ public class UserController {
         }else{
             return "tokenError";
         }
-        //optionalConfirmationToken.ifPresent(userService::confirmUser);
 
 
     }

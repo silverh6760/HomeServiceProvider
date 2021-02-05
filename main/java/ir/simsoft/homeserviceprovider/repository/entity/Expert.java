@@ -9,6 +9,7 @@ import java.util.List;
 
 @Entity
 public class Expert extends User {
+
     private String photo;
     @Enumerated(EnumType.STRING)
     private ConfirmationState confirmationState;
@@ -17,6 +18,8 @@ public class Expert extends User {
     private List<SubServices> subServicesList=new ArrayList<>();
 
     private int score;
+
+
 
     public int getScore() {
         return score;

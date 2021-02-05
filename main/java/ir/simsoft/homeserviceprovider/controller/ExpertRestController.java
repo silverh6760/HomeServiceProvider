@@ -1,13 +1,10 @@
 package ir.simsoft.homeserviceprovider.controller;
 
 import ir.simsoft.homeserviceprovider.exceptions.BusinessException;
-import ir.simsoft.homeserviceprovider.repository.entity.Expert;
-import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
-import ir.simsoft.homeserviceprovider.repository.entity.User;
+import ir.simsoft.homeserviceprovider.repository.entity.*;
 import ir.simsoft.homeserviceprovider.repository.enums.ConfirmationState;
-import ir.simsoft.homeserviceprovider.serviceclasses.ExpertService;
-import ir.simsoft.homeserviceprovider.serviceclasses.SubServicesService;
-import ir.simsoft.homeserviceprovider.serviceclasses.UserService;
+import ir.simsoft.homeserviceprovider.repository.enums.OrderState;
+import ir.simsoft.homeserviceprovider.serviceclasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,17 +19,24 @@ public class ExpertRestController {
     private ExpertService expertService;
     private UserService userService;
     private SubServicesService subServicesService;
+    private OrdersService ordersService;
+    private OfferService offerService;
 @Autowired
-    public ExpertRestController(ExpertService expertService, UserService userService, SubServicesService subServicesService) {
+    public ExpertRestController(ExpertService expertService,
+                                UserService userService,OrdersService ordersService,
+                                SubServicesService subServicesService,
+                                OfferService offerService) {
         this.expertService = expertService;
         this.userService = userService;
         this.subServicesService = subServicesService;
+        this.ordersService=ordersService;
+        this.offerService=offerService;
     }
 
-    @GetMapping
-    public String hello(){
-        return "admin";
-    }
+//    @GetMapping
+//    public String hello(){
+//        return "admin";
+//    }
 
     /*******Rest Methods**************/
     @GetMapping("/allExperts")
@@ -149,6 +153,23 @@ public class ExpertRestController {
         Expert expertByEmail = expertService.getExpertByEmail(email);
         return expertByEmail.getSubServicesList();
     }
+    @GetMapping("/getOrdersByAssignedSubService/{subServiceId}")
+    public List<Orders> getOrdersByAssignedSubService(@PathVariable("subServiceId")int id){
+        return ordersService.getAllOrderBySubService(id);
+    }
+    @PutMapping("/finishOrderByOrderIdEmail/{email}")
+    public ResponseEntity finishOrderByOrderIdEmail(@PathVariable("email")String email,
+                                                    @RequestParam("orderId")int orderId){
+        Expert expertByEmail = expertService.getExpertByEmail(email);
+        Offer offerByUniqueExpertOrder = offerService.getOfferByUniqueExpertOrder(expertByEmail.getId(), orderId);
+        if(!offerByUniqueExpertOrder.getOrders().getOrderState().equals(OrderState.WAITING_FOR_EXPERT_TO_COME)){
+            return ResponseEntity.badRequest().body("You are not chosen yet for the job!");
+        }
+        offerByUniqueExpertOrder.getOrders().setOrderState(OrderState.FINISHED);
+        offerService.saveOffer(offerByUniqueExpertOrder);
+        return ResponseEntity.ok("The Order is Finished");
+    }
+
 
 //    @GetMapping("/getExpertID/{email}")
 //    public List<SubServices> getAssignedSubServices(@PathVariable("email") String email){

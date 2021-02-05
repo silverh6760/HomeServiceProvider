@@ -44,6 +44,9 @@ public class UserService implements UserDetailsService {
         List<User> all = (List<User>) userDao.findAll();
         return all;
     }
+    public User getUserByEmail(String email){
+       return userDao.findByEmail(email);
+    }
 
     public void confirmUser(ConfirmationToken confirmationToken) {
 
