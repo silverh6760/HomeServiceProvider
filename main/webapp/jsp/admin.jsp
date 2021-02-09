@@ -26,8 +26,10 @@
 </header>
 
 <div class="btn-group" role="group" aria-label="Basic example">
-    <button type="button" class="btn btn-secondary"><a href="/admin/manageService">Manage Services</a></button>
-    <button type="button" class="btn btn-secondary"><a href="/admin/manageExpert">Manage Experts</a></button>
+    <button type="button" class="btn btn-secondary"><a href="/admin/manageService" style="color:white">Manage Services</a></button>
+    <button type="button" class="btn btn-secondary"><a href="/admin/manageExpert" style="color:white">Manage Experts</a></button>
+    <button type="button" class="btn btn-secondary"><a href="/admin/userSearch" style="color:white">User Search</a></button>
+    <button type="button" class="btn btn-primary"><a href="/admin/ordersSearch" style="color:white">Orders Search</a></button>
 </div>
 
 <script>

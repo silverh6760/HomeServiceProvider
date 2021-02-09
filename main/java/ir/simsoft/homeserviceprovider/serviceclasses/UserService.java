@@ -1,8 +1,10 @@
 package ir.simsoft.homeserviceprovider.serviceclasses;
 
 import ir.simsoft.homeserviceprovider.exceptions.BusinessException;
+import ir.simsoft.homeserviceprovider.repository.dao.ExpertDao;
 import ir.simsoft.homeserviceprovider.repository.dao.UserDao;
 import ir.simsoft.homeserviceprovider.repository.entity.ConfirmationToken;
+import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.User;
 import ir.simsoft.homeserviceprovider.repository.enums.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +36,16 @@ public class UserService implements UserDetailsService {
     }
     //private Map<String, User> roles = new HashMap<>();
 
+
     public User registerUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userDao.save(user);
 
+    }
+
+    public List<User> findBySpecifiedField(User user) {
+        List<User> userList = userDao.findAll(UserDao.findBy(user));
+        return userList;
     }
 
     public List<User> getUsers() {

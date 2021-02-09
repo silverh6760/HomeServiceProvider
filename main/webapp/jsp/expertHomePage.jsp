@@ -27,9 +27,10 @@
     </div>
 </header>
 <center>
-<div class="btn-group" role="group" aria-label="Basic example">
-    <button type="button" class="btn btn-secondary"><a href="/expertPage/assignSubService">Assign SubService</a></button>
-    <button type="button" class="btn btn-secondary"><a href="/expertPage/seeOrders">See Orders to Offer</a></button>
+<div class="btn-group" role="group" aria-label="Basic example" style="color:white ">
+    <button type="button" class="btn btn-secondary"><a href="/expertPage/assignSubService" style="color:white">Assign SubService</a></button>
+    <button type="button" class="btn btn-secondary"><a href="/expertPage/seeOrders" style="color:white ">See Orders to Offer</a></button>
+    <button type="button" class="btn btn-secondary"><a href="/expertPage/terminationAnnouncement" style="color:white ">Termination Announcement</a></button>
 </div>
 </center>
 </body>

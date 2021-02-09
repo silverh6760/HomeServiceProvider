@@ -13,10 +13,8 @@ public class Expert extends User {
     private String photo;
     @Enumerated(EnumType.STRING)
     private ConfirmationState confirmationState;
-
     @ManyToMany(cascade = CascadeType.MERGE)
     private List<SubServices> subServicesList=new ArrayList<>();
-
     private int score;
 
 

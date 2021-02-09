@@ -2,6 +2,7 @@ package ir.simsoft.homeserviceprovider.repository.entity;
 
 import ir.simsoft.homeserviceprovider.repository.enums.OrderState;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +12,7 @@ public class Orders {
     private Integer id;
     @CreationTimestamp
     private Date orderDate;
+    @Temporal(value = TemporalType.DATE)
     private Date dueDate;
     private String taskDescription;
     private String address;
@@ -21,6 +23,7 @@ public class Orders {
     private User customer;
     @ManyToOne
     private SubServices subServices;
+
 
     public Integer getId() {
         return id;

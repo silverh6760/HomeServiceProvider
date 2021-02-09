@@ -4,12 +4,14 @@ import ir.simsoft.homeserviceprovider.exceptions.BusinessException;
 import ir.simsoft.homeserviceprovider.repository.entity.*;
 import ir.simsoft.homeserviceprovider.repository.enums.ConfirmationState;
 import ir.simsoft.homeserviceprovider.repository.enums.OrderState;
+import ir.simsoft.homeserviceprovider.repository.enums.PaymentStatus;
 import ir.simsoft.homeserviceprovider.serviceclasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -21,16 +23,19 @@ public class ExpertRestController {
     private SubServicesService subServicesService;
     private OrdersService ordersService;
     private OfferService offerService;
+    private BillService billService;
 @Autowired
     public ExpertRestController(ExpertService expertService,
                                 UserService userService,OrdersService ordersService,
                                 SubServicesService subServicesService,
-                                OfferService offerService) {
+                                OfferService offerService,
+                                BillService billService) {
         this.expertService = expertService;
         this.userService = userService;
         this.subServicesService = subServicesService;
         this.ordersService=ordersService;
         this.offerService=offerService;
+        this.billService=billService;
     }
 
 //    @GetMapping
@@ -155,18 +160,51 @@ public class ExpertRestController {
     }
     @GetMapping("/getOrdersByAssignedSubService/{subServiceId}")
     public List<Orders> getOrdersByAssignedSubService(@PathVariable("subServiceId")int id){
-        return ordersService.getAllOrderBySubService(id);
+
+        List<Orders> allOrderBySubService = ordersService.getAllOrderBySubService(id);
+        for(int i=allOrderBySubService.size()-1;i>=0;i--){
+            if(allOrderBySubService.get(i).getOrderState().equals(OrderState.FINISHED) ||
+                    allOrderBySubService.get(i).getOrderState().equals(OrderState.WAITING_FOR_EXPERT_TO_COME)){
+                allOrderBySubService.remove(i);
+            }
+        }
+        return allOrderBySubService;
+    }
+    @GetMapping("/getAllOrderComeHomeBySubService/{subServiceId}")
+    public List<Orders> getAllOrderComeHomeBySubService(@PathVariable("subServiceId")int id,
+                                                        @RequestParam("email")String email){
+        Expert expertByEmail = expertService.getExpertByEmail(email);
+        List<Orders> ordersList = ordersService.getAllOrderComeHomeBySubService(id);
+        for(int i=ordersList.size()-1;i>=0;i--){
+            Offer uniqueOffer = offerService.getOfferByUniqueExpertOrder(expertByEmail.getId(),ordersList.get(i).getId());
+            if(uniqueOffer.getOrders().getId()!=ordersList.get(i).getId()){
+                ordersList.remove(i);
+            }
+        }
+        return ordersList;
     }
     @PutMapping("/finishOrderByOrderIdEmail/{email}")
     public ResponseEntity finishOrderByOrderIdEmail(@PathVariable("email")String email,
                                                     @RequestParam("orderId")int orderId){
         Expert expertByEmail = expertService.getExpertByEmail(email);
         Offer offerByUniqueExpertOrder = offerService.getOfferByUniqueExpertOrder(expertByEmail.getId(), orderId);
+        if(Objects.isNull(offerByUniqueExpertOrder)){
+            return ResponseEntity.badRequest().body("You Didnt Make an Offer For This Order");
+        }
+        if(offerByUniqueExpertOrder.getOrders().getOrderState().equals(OrderState.FINISHED)){
+            return ResponseEntity.badRequest().body("The Job is Already Finished!");
+        }
         if(!offerByUniqueExpertOrder.getOrders().getOrderState().equals(OrderState.WAITING_FOR_EXPERT_TO_COME)){
             return ResponseEntity.badRequest().body("You are not chosen yet for the job!");
         }
         offerByUniqueExpertOrder.getOrders().setOrderState(OrderState.FINISHED);
         offerService.saveOffer(offerByUniqueExpertOrder);
+        Bill bill=new Bill();
+        bill.setAmount(offerByUniqueExpertOrder.getProposedPrice());
+        bill.setExpert(offerByUniqueExpertOrder.getExpert());
+        bill.setOrders(offerByUniqueExpertOrder.getOrders());
+        bill.setPaymentStatus(PaymentStatus.Not_YET_PAID);
+        billService.saveBill(bill);
         return ResponseEntity.ok("The Order is Finished");
     }
 

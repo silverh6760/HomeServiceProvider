@@ -28,10 +28,10 @@
 </header>
 
 <button type="button" class="btn btn-secondary">
-    <a href="/admin/manageExpert/confirmNewExpert">Confirm New Experts</a></button>
+    <a href="/admin/manageExpert/confirmNewExpert" style="color:white">Confirm New Experts</a></button>
 <button type="button" class="btn btn-secondary">
-        <a href="/admin/manageExpert/expertSearch">Expert Search</a></button>
+        <a href="/admin/manageExpert/expertSearch" style="color:white">Expert Search</a></button>
 <button type="button" class="btn btn-secondary">
-    <a href="/admin/manageExpert/expertAssignment">Expert Services Assignment</a></button>
+    <a href="/admin/manageExpert/expertAssignment" style="color:white">Expert Services Assignment</a></button>
 </body>
 </html>

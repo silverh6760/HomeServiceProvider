@@ -13,17 +13,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
+            integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"
+            integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj"
+            crossorigin="anonymous"></script>
     <title>Customer Page</title>
 </head>
-<body onload="serviceLoad();getEmail();">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-
+<body onload="serviceLoad();getEmail();checkBill();">
 <header>
     <div class="container">
         <div id="branding">
@@ -31,7 +36,10 @@
         </div>
         <nav>
             <ul>
-                <li class="current"><a href="/">Home</a></li>
+                <li><a href="/">Home</a></li>
+                <li class="current"><a href="/customer">Customer Page</a></li>
+                <li >
+                    <a id="billPageLi" style="display: none" href="/customer/customerBillPage">Customer Bill Page</a></li>
                 <li><a href="/logout">Log Out</a></li>
             </ul>
         </nav>
@@ -90,7 +98,8 @@
 <p>${message}</p>
 <script>
 
-
+var customerEmail;
+/********** get email *****************/
     function getEmail(){
         $.ajax({
             type: "GET",
@@ -98,13 +107,49 @@
             success: function (result) {
                 customerEmail = result;
                 $("#myId").text("Hello "+customerEmail);
-                $("#customerEmail").val(customerEmail);
+                $("#customerEmail").val(customerEmail)
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/bill/checkCustomerBill/"+customerEmail,
+                    async:false,
+                    success: function (result) {
+                        if(result===true){
+                            $("#billPageLi").css("display","block");
+                            $("#billPageLi").focus();
+                            alert("You have Bills to pay!");
+                        }
+                    },
+                    error: function (result) {
+                        $("#myId").text(JSON.stringify(result));
+                    }
+                });
             },
             error: function (result) {
                 $("#myId").text(JSON.stringify(result));
             }
         });
     }
+    /*********** check Bill*****************/
+    function checkBill(){
+        // alert("salam");
+        // $("#billPageLi").css("display","none");
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/bill/checkCustomerBill/"+customerEmail,
+            async:false,
+            success: function (result) {
+                if(result===true){
+                    $("#billPageLi").css("display","block");
+                    $("#billPageLi").css("color","blue");
+                    alert("You have Bills to pay!");
+                }
+            },
+            error: function (result) {
+                $("#myId").text(JSON.stringify(result));
+            }
+        });
+    }
+/********** service load *****************/
     function serviceLoad() {
         var msg = "";
         var div = document.getElementById("serviceDiv");

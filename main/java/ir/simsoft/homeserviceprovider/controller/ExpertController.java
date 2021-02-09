@@ -46,6 +46,12 @@ public class ExpertController {
         return "expertOrderPage";
     }
 
+    @GetMapping("/expertPage/terminationAnnouncement")
+    public String getTerminationPage() {
+
+        return "terminationAnnouncement";
+    }
+
     @GetMapping("/expertPage/assignSubService")
     public String getConfirmNewExpertPage(Model model) {
         Expert expert = expertService.getExpertById(8);
@@ -58,6 +64,11 @@ public class ExpertController {
                                     @RequestParam("time") String time, RedirectAttributes redirectAttributes) {
         Expert expertByEmail = expertService.getExpertByEmail(offer.getExpert().getEmail());
         Orders orders = ordersService.getOrderById(offer.getOrders().getId());
+        Offer offerByUniqueExpertOrder = offerService.getOfferByUniqueExpertOrder(expertByEmail.getId(), orders.getId());
+        if(Objects.nonNull(offerByUniqueExpertOrder)){
+            redirectAttributes.addFlashAttribute("message", "You already made offer for this Order");
+            return "redirect:/expertPage/seeOrders";
+        }
 //        Offer offerInDB = offerService.getOfferByUniqueOrderExpert(expertByEmail.getId(),orders.getId());
 //        if(Objects.nonNull(offerInDB)){
 //            redirectAttributes.addFlashAttribute("message", "The Offer is repetitive for this order!you " +
@@ -78,10 +89,10 @@ public class ExpertController {
             redirectAttributes.addFlashAttribute("message", "The Offer Price is less than Base Price");
             return "redirect:/expertPage/seeOrders";
         }
-        if (offer.getStartHour().getHour() > 20 || offer.getStartHour().getHour() < 8) {
-            redirectAttributes.addFlashAttribute("message", "The Time is not Correct");
-            return "redirect:/expertPage/seeOrders";
-        }
+//        if (offer.getStartHour().getHour() > 20 || offer.getStartHour().getHour() < 8) {
+//            redirectAttributes.addFlashAttribute("message", "The Time is not Correct");
+//            return "redirect:/expertPage/seeOrders";
+//        }
         orders.setOrderState(OrderState.WAITING_FOR_EXPERT_SELECTION);
         offer.setOrders(orders);
         offer.setExpert(expertByEmail);

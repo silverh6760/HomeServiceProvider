@@ -1,14 +1,8 @@
 package ir.simsoft.homeserviceprovider.controller;
 
-import ir.simsoft.homeserviceprovider.repository.entity.Offer;
-import ir.simsoft.homeserviceprovider.repository.entity.Orders;
-import ir.simsoft.homeserviceprovider.repository.entity.SubServices;
-import ir.simsoft.homeserviceprovider.repository.entity.User;
+import ir.simsoft.homeserviceprovider.repository.entity.*;
 import ir.simsoft.homeserviceprovider.repository.enums.OrderState;
-import ir.simsoft.homeserviceprovider.serviceclasses.OfferService;
-import ir.simsoft.homeserviceprovider.serviceclasses.OrdersService;
-import ir.simsoft.homeserviceprovider.serviceclasses.SubServicesService;
-import ir.simsoft.homeserviceprovider.serviceclasses.UserService;
+import ir.simsoft.homeserviceprovider.serviceclasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,15 +23,19 @@ public class CustomerController {
     private OrdersService ordersService;
     private UserService userService;
     private OfferService offerService;
+    private BillService billService;
 
     @Autowired
     public CustomerController(SubServicesService subServicesService,
                               OrdersService ordersService,
-                              UserService userService, OfferService offerService) {
+                              UserService userService,
+                              OfferService offerService,
+                              BillService billService) {
         this.subServicesService = subServicesService;
         this.ordersService = ordersService;
         this.userService = userService;
         this.offerService = offerService;
+        this.billService=billService;
     }
 
 
@@ -139,6 +137,17 @@ public class CustomerController {
        }else{
            return ResponseEntity.badRequest().body("Null");
        }
+    }
+
+    @GetMapping("/customerBillPage")
+    public String getCustomerBillPage(){
+        return "customerBillPage";
+    }
+    @GetMapping("/customerPaymentPage/{billId}")
+    public String getCustomerPaymentPage(@PathVariable("billId") int billId ,Model model){
+        Bill billById = billService.getBillById(billId);
+        model.addAttribute("bill",billById);
+        return "customerPaymentPage";
     }
 
 }

@@ -42,7 +42,7 @@
 <center>
     <table id="ordersTB" class="table center w-75" >
         <thead><th>ID</th><th>Due Date</th><th>Task Description</th><th>Address</th>
-        <th>Proposed Price</th><th>Select</th></thead>
+        <th>Proposed Price</th><th>Orders State</th><th>Select</th></thead>
 
         <tbody>
 
@@ -108,8 +108,8 @@
             success :function (result){
                 $.each(result,function(index,value){
                     msg+="<tr><td>"+value.id+"</td><td>"+value.dueDate+"</td><td>"+value.taskDescription+"</td><td>"+value.address+"</td>"+
-                        "<td>"+value.proposedPrice+"</td>"+
-                        "<td><button  class=\"btn btn-sm btn-danger btnSelect3\" data-toggle=\"modal\" data-target=\"#offerModal\">Make Offer</button></td></tr>";
+                        "<td>"+value.proposedPrice+"</td><td>"+value.orderState+
+                        "</td><td><button  class=\"btn btn-sm btn-danger btnSelect3\" data-toggle=\"modal\" data-target=\"#offerModal\">Make Offer</button></td></tr>";
                 });
                 $(msg).appendTo("#ordersTB tbody");
             },
@@ -144,7 +144,7 @@
                             <td><form:input path="proposedPrice" id="proposedPrice" name="proposedPrice" required="true"/></td>
                         </tr>
                         <tr>
-                            <td><form:label path="durationOfWork">Task Description</form:label></td>
+                            <td><form:label path="durationOfWork">Duration of Work</form:label></td>
                             <td><form:input type="number" id="durationOfWork" path="durationOfWork" required="true"/></td>
                         </tr>
                         <tr>

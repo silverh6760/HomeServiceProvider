@@ -32,7 +32,7 @@ public class OfferService {
         offerDao.save(offer);
     }
 
-    public Offer getOfferByUniqueExpertOrder(Integer id, Integer id1) {
-        return offerDao.getOfferByExpertIdOrderId(id,id);
+    public Offer getOfferByUniqueExpertOrder(Integer expertId, Integer orderId) {
+        return offerDao.getOfferByExpertIdOrderId(expertId,orderId);
     }
 }

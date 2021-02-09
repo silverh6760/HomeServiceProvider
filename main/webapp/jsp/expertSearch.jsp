@@ -70,6 +70,7 @@
         <th>Confirmation State</th>
         <th>Image</th>
         <th>Score</th>
+        <th>Select</th>
         </thead>
 
         <tbody>
@@ -78,6 +79,24 @@
     </table>
 </div>
 <p id="myId"></p>
+
+    <div  id="billDiv" class="w-75 p-3" style="display: none">
+        <table id="billTB" class="table">
+            <thead>
+            <th>Expert Name</th>
+            <th>Amount</th>
+            <th>SubService Name</th>
+            <th>Service Name</th>
+            <th>Paying Status</th>
+            <th>Issue Date</th>
+            </thead>
+
+            <tbody>
+
+            </tbody>
+        </table>
+
+    </div>
 </center>
 </body>
 
@@ -108,7 +127,8 @@
                 $.each(result, function (index, value) {
                     msg += "<tr><td>" + value.id + "</td><td>" + value.name + "</td><td>" + value.family + "</td><td>" + value.email +
                         "</td><td>" + value.confirmationState + "</td><td>" + value.photo + "</td>" +
-                        "<td>"+value.score+"</td></tr>";
+                        "<td>"+value.score+"</td>" +
+                        "<td><input class=\"form-check-input radioB\" type=\"radio\" name=\"flexRadioDefault\" onchange=\"changeHandler()\"></td></tr>";
                 });
                 $(msg).appendTo("#tb tbody");
                 //$("#myId").text(JSON.stringify(result));
@@ -118,6 +138,38 @@
             }
         });
     });
+
+
+    /************change handler***********/
+    var expertID;
+    function changeHandler(){
+
+        $("#billDiv").css("display", "block");
+        var currentRow= $('input[name="flexRadioDefault"]:checked').closest('tr');
+        expertID=currentRow.find("td:eq(0)").text();
+        var table = document.getElementById("billTB");
+        for (var i = table.rows.length - 1; i > 0; i--) {
+            table.deleteRow(i);
+        }
+        var msg="";
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/bill/getAllExpertBill/"+parseInt(expertID),
+            success: function (result) {
+                $.each(result, function (index, value) {
+                    msg += "<tr><td>" + value.expert.name + "</td><td>" + value.amount +"</td><td>"+value.orders.subServices.name+
+                        "</td><td>"+value.orders.subServices.services.name+
+                        "</td><td>"+value.paymentStatus+"</td><td>" +value.issueDate+
+                        "</td></tr>";
+                });
+                $(msg).appendTo("#billTB tbody");
+            },
+            error: function (result) {
+                $("#myId").text(JSON.stringify(result));
+            }
+        });
+
+    }
 </script>
 
 </html>

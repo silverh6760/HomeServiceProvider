@@ -17,28 +17,6 @@
     <link href="<c:url value="/resources/theme/css/style.css"/>" rel="stylesheet">
     ${subServiceByID.name}
     <title>Title</title>
-    <style>
-        a:link {
-            color: white;
-            background-color: transparent;
-            text-decoration: none;
-        }
-        a:visited {
-            color: pink;
-            background-color: transparent;
-            text-decoration: none;
-        }
-        a:hover {
-            color: red;
-            background-color: transparent;
-            text-decoration: underline;
-        }
-        a:active {
-            color: yellow;
-            background-color: transparent;
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
 <header>
@@ -62,9 +40,9 @@
     <h3>SubService Base Price: ${subServiceByID.basePrice}</h3>
     <h3>SubService Description: ${subServiceByID.description}</h3>
     <h3>${subServiceByID.description}</h3
-    <button class="btn btn-secondary"><a style="text-decoration-color: white" href="/customer">Book An Order</a></button>
-</div>
 
+</div>
+        <button class="btn btn-primary"><a style="color:white" href="/customer">Book An Order</a></button>
     </center>
 </body>
 </html>

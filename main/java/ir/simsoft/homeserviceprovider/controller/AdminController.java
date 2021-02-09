@@ -44,4 +44,10 @@ public class AdminController {
     public String getUserSearchPage() {
         return "userSearch";
     }
+
+    @GetMapping("/ordersSearch")
+    public String getOrdersSearchPage() {
+        return "ordersSearch";
+    }
+
 }

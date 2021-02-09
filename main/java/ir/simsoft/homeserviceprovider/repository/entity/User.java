@@ -1,9 +1,10 @@
 package ir.simsoft.homeserviceprovider.repository.entity;
 
-import ir.simsoft.homeserviceprovider.repository.enums.ConfirmationState;
 import ir.simsoft.homeserviceprovider.repository.enums.UserRole;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -17,16 +18,16 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
     private Boolean enabled=false;
-//    @Enumerated(EnumType.STRING)
-//    private ConfirmationState confirmationState;
+    @CreationTimestamp
+    private Date registerDate;
 
-//    public ConfirmationState getConfirmationState() {
-//        return confirmationState;
-//    }
-//
-//    public void setConfirmationState(ConfirmationState confirmationState) {
-//        this.confirmationState = confirmationState;
-//    }
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
+    }
 
     public Boolean getEnabled() {
         return enabled;

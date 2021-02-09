@@ -143,6 +143,11 @@ public class UserController {
         return "register";
     }
 
+    @PostMapping("/search")
+    @ResponseBody
+    public List<User> searchBySpecifiedField(@RequestBody User user) {
+        return expertService.findBySpecifiedField(user);
+    }
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") User user , Model model,

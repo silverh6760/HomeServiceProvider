@@ -1,8 +1,11 @@
 package ir.simsoft.homeserviceprovider.serviceclasses;
 
+import ir.simsoft.homeserviceprovider.repository.dao.ExpertDao;
 import ir.simsoft.homeserviceprovider.repository.dao.OrdersDao;
+import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.Offer;
 import ir.simsoft.homeserviceprovider.repository.entity.Orders;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,9 @@ public class OrdersService {
     public List<Orders> getAllOrderBySubService(int id) {
         return ordersDao.getAllOrderBySubService(id);
     }
+    public List<Orders> getAllOrderComeHomeBySubService(int id){
+        return ordersDao.getAllOrderComeHomeBySubService(id);
+    }
 
     public Orders getOrderById(int id) {
         Optional<Orders> byId = ordersDao.findById(id);
@@ -42,5 +48,10 @@ public class OrdersService {
     }
     public List<Orders> allOrdersByCustomerEmail(String email){
         return ordersDao.allOrdersByCustomerEmail(email);
+    }
+
+    public List<Orders> findBySpecifiedField(Orders orders) {
+       return ordersDao.findAll(OrdersDao.findBy(orders));
+
     }
 }

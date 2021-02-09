@@ -50,7 +50,7 @@
 <center>
 <h3>Login</h3>
 <p>${login_error}</p>
-<form method="post" name="form" action="/doLogin"  >
+<form method="post" name="form" action="/doLogin" >
     <div class="w-25">
         <div class="form-group" >
             <label for="email">Email address</label>
