@@ -4,6 +4,7 @@
 <html>
 <head>
     <title>Title</title>
+    <meta http-equiv="refresh" content="600;http://localhost:8080/customer/expirePaymentPage" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -83,6 +84,10 @@
 
 <center>
 
+    <div class="w-25">
+        <p>Timer: <h3 id="counter"></h3></p>
+    </div>
+
 <div class="container">
     <div class="row">
         <div class="col-xs-12 col-md-4">
@@ -156,39 +161,35 @@
     <p id="result"></p>
 
 </center>
-<%--<center>--%>
-<%--    <form >--%>
-<%--        <table>--%>
-<%--            <tr>--%>
-<%--                <td><label path="name">Name</label></td>--%>
-<%--                <td><input id="name" path="name" name="name" required="true"  /><p id="nameEr"></p></td>--%>
-<%--            </tr>--%>
-<%--            <tr>--%>
-<%--                <td><label path="family">Family</label></td>--%>
-<%--                <td><input id="family" path="family" required="true"/><p id="familyEr"></p></td>--%>
-<%--            </tr>--%>
-<%--            <tr>--%>
-<%--                <td><label path="email">Email</label></td>--%>
-<%--                <td><input id="email" path="email" required="true" /><p id="result1"></p></td>--%>
-<%--            </tr>--%>
-<%--            <tr>--%>
-<%--                <td><label path="password">Password</label></td>--%>
-<%--                <td><input type="password" id="password" path="password" required="true" /><br><p id="result2"></p></td>--%>
-<%--            </tr>--%>
 
-<%--        </table>--%>
-
-<%--        <input id="submit" type="submit" value="Submit" />--%>
-<%--        &lt;%&ndash;    <button type="submit" id="submit" value="submit">Register</button>&ndash;%&gt;--%>
-<%--    </form>--%>
-<%--</center>--%>
 <script type="text/javascript">
+
     var cardNumber=false;
     var cvNumber=false;
     var expireMonth=false;
     var expireYear=false;
     var captchaInput=false;
     var captchaValid=false;
+
+
+    var timer2 = "10:01";
+    var interval = setInterval(function() {
+        var timer = timer2.split(':');
+        //by parsing integer, I avoid all extra string processing
+        var minutes = parseInt(timer[0], 10);
+         var seconds = parseInt(timer[1], 10);
+        --seconds;
+        minutes = (seconds < 0) ? --minutes : minutes;
+        if (minutes < 0) clearInterval(interval);
+        seconds = (seconds < 0) ? 59 : seconds;
+        seconds = (seconds < 10) ? '0' + seconds : seconds;
+        //minutes = (minutes < 10) ?  minutes : minutes;
+        $('#counter').html(minutes + ':' + seconds);
+        timer2 = minutes + ':' + seconds;
+    }, 1000);
+
+
+
     // Captcha Script
 
     $("#payBtn").click(function(){

@@ -1,10 +1,13 @@
 package ir.simsoft.homeserviceprovider.serviceclasses;
 
 import ir.simsoft.homeserviceprovider.repository.dao.BillDao;
+import ir.simsoft.homeserviceprovider.repository.dto.BillInfoDto;
 import ir.simsoft.homeserviceprovider.repository.entity.Bill;
+import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,5 +39,17 @@ public class BillService {
 
     public List<Bill> getAllUserBills(int id) {
         return billDao.findAllUserBillById(id);
+    }
+
+
+    public List<BillInfoDto> findAllBillDtoByStartEndDate(Date startDate,Date endDate){
+        return billDao.findAllBillDtoByStartEndDate(startDate,endDate);
+    }
+    public List<BillInfoDto> findAllBillInfoDto(){
+        return billDao.findAllBillDto();
+    }
+
+    public List<Bill> getBillsByExpert(Expert expertByEmail) {
+        return billDao.findByExpert(expertByEmail);
     }
 }

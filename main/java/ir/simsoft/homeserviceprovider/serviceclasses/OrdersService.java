@@ -2,6 +2,7 @@ package ir.simsoft.homeserviceprovider.serviceclasses;
 
 import ir.simsoft.homeserviceprovider.repository.dao.ExpertDao;
 import ir.simsoft.homeserviceprovider.repository.dao.OrdersDao;
+import ir.simsoft.homeserviceprovider.repository.dto.OrdersInfoDto;
 import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.Offer;
 import ir.simsoft.homeserviceprovider.repository.entity.Orders;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +54,12 @@ public class OrdersService {
 
     public List<Orders> findBySpecifiedField(Orders orders) {
        return ordersDao.findAll(OrdersDao.findBy(orders));
+    }
 
+    public List<OrdersInfoDto> allOrdersInfoDto(){
+        return ordersDao.allOrdersInfoDto();
+    }
+    public List<OrdersInfoDto> allOrdersByStartDateEndDate(Date startDate,Date endDate){
+        return ordersDao.findAllOrdersInfoDtoByStartEndDate(startDate,endDate);
     }
 }

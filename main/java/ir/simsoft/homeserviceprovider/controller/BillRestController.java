@@ -1,5 +1,6 @@
 package ir.simsoft.homeserviceprovider.controller;
 
+import ir.simsoft.homeserviceprovider.repository.dto.BillInfoDto;
 import ir.simsoft.homeserviceprovider.repository.entity.Bill;
 import ir.simsoft.homeserviceprovider.repository.entity.Wallet;
 import ir.simsoft.homeserviceprovider.repository.enums.PaymentStatus;
@@ -68,6 +69,14 @@ public class BillRestController {
             billById.setPaymentStatus(PaymentStatus.PAID);
             billService.saveBill(billById);
             return ResponseEntity.ok("The Customer Bill is Paid Successfully");
+    }
+
+    @PostMapping("/reportExpertOrdersDone")
+    public List<BillInfoDto> findAllBillDtoByStartEndDate(@RequestBody BillInfoDto billInfoDto){
+        if(billInfoDto.getStartDate()==null && billInfoDto.getEndDate()==null){
+            return billService.findAllBillInfoDto();
+        }
+        return billService.findAllBillDtoByStartEndDate(billInfoDto.getStartDate(), billInfoDto.getEndDate());
     }
 
 }

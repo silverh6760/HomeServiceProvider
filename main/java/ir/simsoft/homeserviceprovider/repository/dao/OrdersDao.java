@@ -1,5 +1,7 @@
 package ir.simsoft.homeserviceprovider.repository.dao;
 
+import ir.simsoft.homeserviceprovider.repository.dto.BillInfoDto;
+import ir.simsoft.homeserviceprovider.repository.dto.OrdersInfoDto;
 import ir.simsoft.homeserviceprovider.repository.entity.Expert;
 import ir.simsoft.homeserviceprovider.repository.entity.Orders;
 import ir.simsoft.homeserviceprovider.repository.entity.Services;
@@ -15,7 +17,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +48,7 @@ public interface OrdersDao extends CrudRepository<Orders,Integer>, JpaSpecificat
                 conditions.add(criteriaBuilder.equal(root.get("dueDate"), orders.getDueDate()));
             }
             if (Objects.nonNull(orders.getOrderDate())) {
-                conditions.add(criteriaBuilder.equal(root.get("orderDate"),  orders.getOrderDate()));
+                conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("orderDate"),  orders.getOrderDate()));
             }
             CriteriaQuery<Orders> expertCriteriaQuery = query.select(root)
                     .where(conditions.toArray(new Predicate[]{}));
@@ -68,5 +72,17 @@ public interface OrdersDao extends CrudRepository<Orders,Integer>, JpaSpecificat
 
     @Query("select orders from Orders orders where orders.customer.email=:email")
     List<Orders> allOrdersByCustomerEmail(@Param("email") String email);
+
+
+    @Query("select new ir.simsoft.homeserviceprovider.repository.dto.OrdersInfoDto(ords.customer,count(ords))" +
+            "from Orders ords group by ords.customer")
+    List<OrdersInfoDto> allOrdersInfoDto();
+
+//    @Query("select new ir.simsoft.homeserviceprovider.repository.dto.OrdersInfoDto(ords.customer,count(ords))" +
+//            "from Orders ords where ords.orderDate>=: startDate and ords.orderDate<=:endDate ")
+//    List<OrdersInfoDto> findAllOrdersInfoDtoByStartDateEndDate(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+@Query("select new ir.simsoft.homeserviceprovider.repository.dto.OrdersInfoDto(orders.customer ,count(orders)) from Orders orders" +
+        " where orders.orderDate>=:startDate and orders.orderDate<=:endDate group by orders.customer")
+List<OrdersInfoDto> findAllOrdersInfoDtoByStartEndDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 }

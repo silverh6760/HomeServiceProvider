@@ -43,6 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(HttpMethod.POST,"/user/register","/user/register/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/user/checkPassword","/user/checkPassword/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/user/checkEmail","/user/checkEmail/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/orders/reportCustomerOrdersIssued","/orders/reportCustomerOrdersIssued/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/ServiceManagement/allFullServices","/ServiceManagement/allFullServices/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/ServiceManagement/allSubServicesByID","/ServiceManagement/allSubServicesByID/**").permitAll()
 //                .antMatchers(HttpMethod.POST,"/user/checkFileSize","/user/checkFileSize/**").permitAll()

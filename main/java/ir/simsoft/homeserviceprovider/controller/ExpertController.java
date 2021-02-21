@@ -58,6 +58,10 @@ public class ExpertController {
         model.addAttribute("expert", expert);
         return "expert";
     }
+    @GetMapping("/expertPage/seeDoneOrders")
+    public String getDoneOrdersPage(){
+        return "expertDoneOrders";
+    }
 
     @PostMapping("/expertPage/seeOrders")
     public String makeOfferForOrder(@ModelAttribute("offer") Offer offer,

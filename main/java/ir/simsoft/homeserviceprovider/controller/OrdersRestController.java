@@ -1,6 +1,6 @@
 package ir.simsoft.homeserviceprovider.controller;
 
-import ir.simsoft.homeserviceprovider.repository.entity.Expert;
+import ir.simsoft.homeserviceprovider.repository.dto.OrdersInfoDto;
 import ir.simsoft.homeserviceprovider.repository.entity.Orders;
 import ir.simsoft.homeserviceprovider.serviceclasses.OrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +20,14 @@ public class OrdersRestController {
     @PostMapping("/search")
     public List<Orders> searchBySpecifiedField(@RequestBody Orders orders) {
         return ordersService.findBySpecifiedField(orders);
+    }
+
+    @PostMapping("/reportCustomerOrdersIssued")
+    public List<OrdersInfoDto> reportCustomerOrdersIssued(@RequestBody OrdersInfoDto ordersInfoDto){
+        if(ordersInfoDto.getStartDate()==null && ordersInfoDto.getEndDate()==null){
+            return ordersService.allOrdersInfoDto();
+        }
+
+       return ordersService.allOrdersByStartDateEndDate(ordersInfoDto.getStartDate(),ordersInfoDto.getEndDate());
     }
 }

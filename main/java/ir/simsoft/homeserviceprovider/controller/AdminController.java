@@ -50,4 +50,12 @@ public class AdminController {
         return "ordersSearch";
     }
 
+
+    @GetMapping("/report")
+    public String getReportPage(){return "report";}
+    @GetMapping("/report/expertReport")
+    public String getExpertReportPage(){return "expertReport";}
+    @GetMapping("/report/userReport")
+    public String getUserReportPage(){return "userReport";}
+
 }

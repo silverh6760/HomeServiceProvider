@@ -24,18 +24,24 @@ public class ExpertRestController {
     private OrdersService ordersService;
     private OfferService offerService;
     private BillService billService;
+    private CommentsService commentsService;
+    private WalletService walletService;
 @Autowired
     public ExpertRestController(ExpertService expertService,
-                                UserService userService,OrdersService ordersService,
+                                UserService userService, OrdersService ordersService,
                                 SubServicesService subServicesService,
                                 OfferService offerService,
-                                BillService billService) {
+                                BillService billService,
+                                CommentsService commentsService,
+                                WalletService walletService) {
         this.expertService = expertService;
         this.userService = userService;
         this.subServicesService = subServicesService;
         this.ordersService=ordersService;
         this.offerService=offerService;
         this.billService=billService;
+        this.commentsService=commentsService;
+        this.walletService=walletService;
     }
 
 //    @GetMapping
@@ -158,6 +164,24 @@ public class ExpertRestController {
         Expert expertByEmail = expertService.getExpertByEmail(email);
         return expertByEmail.getSubServicesList();
     }
+    @GetMapping("/getCommentsForDoneOrders/{email}")
+    public List<Comments> getCommentsForDoneOrders(@PathVariable("email") String email){
+
+        Expert expertByEmail = expertService.getExpertByEmail(email);
+        return commentsService.getCommentsByExpert(expertByEmail);
+    }
+    @GetMapping("/getBillsByExpert/{email}")
+    public List<Bill> getBillsByExpert(@PathVariable("email") String email){
+
+        Expert expertByEmail = expertService.getExpertByEmail(email);
+        return billService.getBillsByExpert(expertByEmail);
+    }
+    @GetMapping("/getTotalSalary/{email}")
+    public Wallet getExpertWallet(@PathVariable("email") String email){
+        Expert expertByEmail = expertService.getExpertByEmail(email);
+        return walletService.getWalletByExpert(expertByEmail);
+    }
+
     @GetMapping("/getOrdersByAssignedSubService/{subServiceId}")
     public List<Orders> getOrdersByAssignedSubService(@PathVariable("subServiceId")int id){
 

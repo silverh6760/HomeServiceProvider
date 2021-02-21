@@ -149,5 +149,9 @@ public class CustomerController {
         model.addAttribute("bill",billById);
         return "customerPaymentPage";
     }
+    @GetMapping("/expirePaymentPage")
+    public String getExpirePage(){
+        return "expirePaymentPage";
+    }
 
 }
