@@ -67,4 +67,5 @@ public class Bill {
     public void setIssueDate(Date issueDate) {
         this.issueDate = issueDate;
     }
+
 }
